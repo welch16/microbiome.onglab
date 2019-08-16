@@ -1,0 +1,30 @@
+---
+title: "Procesing microbiome data with dada2"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Procesing microbiome data with dada2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Before we start, there are better references that the ones I can provide in this document:
+
+* [Original package website](https://benjjneb.github.io/dada2/)
+
+* [Article with a more complex workflow](https://f1000research.com/articles/5-1492/v2)
+
+As always, to load the package, we have to use the command:
+
+```{r setup,eval=FALSE}
+library(microbiome.onglab)
+```
+
