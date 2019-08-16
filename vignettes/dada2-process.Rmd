@@ -28,3 +28,12 @@ As always, to load the package, we have to use the command:
 library(microbiome.onglab)
 ```
 
+# Scripts to run
+
+
+```{r}
+
+list.files(system.file("scripts", package = "microbiome.onglab"))
+
+```
+

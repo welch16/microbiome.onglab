@@ -1,4 +1,8 @@
 ##' @import magrittr
+##' @import stringr
+##' @import dplyr
+##' @import readr
+##' @import optparse
 NULL
 
 
@@ -8,15 +12,11 @@ NULL
 ##' @param outdir a character with the name of the output directory
 ##'
 ##' @return a character vector with modified
-##'
-##' @example
-##' parse_filtered_file("test.fastq","./outdir")
+##' @export
 parse_filtered_file <- function(fastq,outdir){
 
-  file.path(
-    outdir,
-    str_replace(basename(fastq), ".fastq", "_filtered.fastq.gz")
-  )
+  file.path(outdir,
+            stringr::str_replace(basename(fastq), ".fastq", "_filtered.fastq.gz"))
 
 }
 
@@ -29,7 +29,7 @@ parse_filtered_file <- function(fastq,outdir){
 ##' @param outfile the file where the full tibble is going to be saved,
 ##'   the R1 and R2 files, are going to share almost the same name
 ##'   but replacing `.csv` with `_R1.csv` and `_R2.csv`, respectively.
-##'
+##' @export
 save_files <- function(all_samples, outfile )
 {
 
