@@ -55,3 +55,27 @@ warning_file <- function(file,warn_text)
     }
   }
 }
+
+##' creates the file structure for running dada2 with condor
+##' @param outdir Name of the base output directory
+##' @export
+create_file_structure <- function(outdir)
+{
+  dir.create(outdir, showWarnings = FALSE)
+
+  ### condor stuff
+
+  dir.create(file.path(outdir,"err"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"log"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"out"), showWarnings = FALSE)
+
+  dir.create(file.path(outdir,"summary"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"filter_fastq"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"filter_fastq_summary"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"error_rates"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"merged_pairs"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"merged_pairs_summary"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"ASV_tables"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"ASV_tables","idtaxa"), showWarnings = FALSE)
+
+}
