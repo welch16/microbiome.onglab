@@ -1,11 +1,14 @@
 Package: microbiome.onglab
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Wrapper functions to run dada2 with htCondor
 Version: 0.2.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Rene Welch
+Maintainer: Rene Welch <rwelch2@wisc.edu>
+Authors@R: c(person(given = "Rene", family = "Welch", role = c("aut",
+        "cre"), email = "[rwelch2@wisc.edu]"))
+Description: We wanted to focus on efficiency, and be able to run dada2 a little bit faster. 
+    Therefore, we wrapped dada2's functions, and using a split-apply-combine strategy with 
+    htCondor we made an accelerated implementatin.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
