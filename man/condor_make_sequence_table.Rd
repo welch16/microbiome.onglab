@@ -7,7 +7,8 @@
 condor_make_sequence_table(make_queue_file = "",
   make_prefix = "seqtab", make_outdir = ".",
   condor_file = "./condor_make_seqtab",
-  batch_name = "dada2_make_seqtab", request_cores = 4)
+  batch_name = "dada2_make_seqtab", request_cores = 4,
+  request_mem = "4 GB")
 }
 \arguments{
 \item{make_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
@@ -21,6 +22,8 @@ condor_make_sequence_table(make_queue_file = "",
 \item{batch_name}{string with the name of the batch}
 
 \item{request_cores}{number of cpus per machine}
+
+\item{request_mem}{number of GB required as memory}
 }
 \description{
 generate the input to make the sequence table files with condor

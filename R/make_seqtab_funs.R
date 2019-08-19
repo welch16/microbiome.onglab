@@ -7,6 +7,7 @@
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
 condor_make_sequence_table <- function(
   make_queue_file = "",
@@ -14,7 +15,8 @@ condor_make_sequence_table <- function(
   make_outdir = ".",
   condor_file = "./condor_make_seqtab",
   batch_name = "dada2_make_seqtab",
-  request_cores = 4
+  request_cores = 4,
+  request_mem = "4 GB"
 )
 {
 
@@ -33,6 +35,7 @@ condor_make_sequence_table <- function(
     str_c("executable       = ", rscript),
     str_c("args             = $(script_r) --queue_file $(queue_file) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
     str_c("request_cpus     = ", request_cores),
+    str_c("request_memory   = ", request_mem),
     "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
     "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
     "basedr           = .",
@@ -90,6 +93,7 @@ get_param_chimeras <- function(param_name, param_frame){
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
 condor_remove_chimeras <- function(
   sequence_table_file,
@@ -98,7 +102,8 @@ condor_remove_chimeras <- function(
   chim_outdir,
   condor_file,
   batch_name,
-  request_cores
+  request_cores,
+  request_mem
 )
 {
 
@@ -117,6 +122,7 @@ condor_remove_chimeras <- function(
       str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --dada_file $(infile) --param_file $(param) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ", request_cores),
+      str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
       str_c("script_r         = ", system.file("scripts/remove_chimeras.R", package = "microbiome.onglab")),
@@ -160,8 +166,8 @@ get_tax_ids <- function(dna,rdata_file)
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
-
 condor_label_taxa <- function(
   asv_file,
   taxa_model_file,
@@ -169,7 +175,8 @@ condor_label_taxa <- function(
   taxa_outdir,
   condor_file,
   batch_name,
-  request_cores
+  request_cores,
+  request_mem = "4 GB"
 )
 {
   str_c <- stringr::str_c
@@ -195,6 +202,7 @@ condor_label_taxa <- function(
       str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --asv_file $(infile) --taxa_model $(taxamodel) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ", request_cores),
+      str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
       str_c("script_r         = ", system.file("scripts/label_taxa.R",package = "microbiome.onglab")),

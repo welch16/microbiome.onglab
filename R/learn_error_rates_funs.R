@@ -35,6 +35,7 @@ get_param_error_rates <- function(param_name, param_frame){
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
 condor_error_rates <- function(
   error_queue_files = c("",""),
@@ -43,7 +44,8 @@ condor_error_rates <- function(
   error_outdir = ".",
   condor_file = "./condor_error_rates",
   batch_name = "dada2_error_rates",
-  request_cores = 4)
+  request_cores = 4,
+  request_mem = "4 GB")
 {
   str_c <- stringr::str_c
 
@@ -62,7 +64,8 @@ condor_error_rates <- function(
       str_c("batch_name       = ",batch_name),
       str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --rate_files $(rate_file) --param_file $(param_file) --outprefix $(outprefix) --outdir $(outdir) --cores ",request_cores),
-      str_c("request_cpus     = ",request_cores),
+      str_c("request_cpus     = ", request_cores),
+      str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
       str_c("script_r         = ", system.file("scripts/learn_error_rates.R",package = "microbiome.onglab")),

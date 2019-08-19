@@ -66,6 +66,8 @@ filtered_fastq %<>% pluck(names(filtered_fastq)[1])
 
 filtered_fastq %<>% parse_filtered_file( file.path(opt$outdir,"filter_fastq"))
 
+filtered_fastq <- filtered_fastq[file.exists(filtered_fastq)]
+
 if(!file.exists(out_file)){
   error_rates <- learnErrors( filtered_fastq, nbases = get_param_error_rates("nbases", params),
                               multithread = TRUE)

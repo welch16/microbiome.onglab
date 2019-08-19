@@ -36,6 +36,7 @@ stopifnot(file.exists(opt$dada_file))
 library(magrittr)
 library(tidyverse)
 library(dada2)
+library(microbiome.onglab)
 library(jsonlite)
 
 if(!file.exists(opt$param_file)){

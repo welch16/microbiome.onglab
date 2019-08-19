@@ -39,6 +39,7 @@ get_param_filter_trim <- function(param_name, param_frame){
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
 condor_filter_trim <- function(
   trim_queue_file = "",
@@ -46,7 +47,8 @@ condor_filter_trim <- function(
   trim_outdir = ".",
   condor_file = "./condor_filter_trim",
   batch_name = "dada2_trim_sequences",
-  request_cores = 4)
+  request_cores = 4,
+  request_mem = "4 GB")
 {
   str_c <- stringr::str_c
 
@@ -64,6 +66,7 @@ condor_filter_trim <- function(
       str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --sample_name $(sample) --fastq1 $(fastq1) --fastq2 $(fastq2) --param_file $(param_file) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ",request_cores),
+      str_c("request_memory   = ",request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 10) && ((CurrentTime - EnteredCurrentStatus) > 300)",
       str_c("script_r         = ",system.file( "scripts/filter_and_trim_pairs.R",package = "microbiome.onglab")),

@@ -40,6 +40,7 @@ library(parallel)
 library(magrittr)
 library(tidyverse)
 library(dada2)
+library(microbiome.onglab)
 
 all_files <- read_csv(opt$queue_file, col_names = FALSE)
 

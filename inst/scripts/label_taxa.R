@@ -31,6 +31,7 @@ stopifnot(file.exists(opt$asv_file))
 library(magrittr)
 library(tidyverse)
 library(dada2)
+library(microbiome.onglab)
 library(DECIPHER)
 library(jsonlite)
 

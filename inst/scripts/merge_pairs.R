@@ -63,6 +63,7 @@ stopifnot(
 library(magrittr)
 library(tidyverse)
 library(dada2)
+library(microbiome.onglab)
 library(jsonlite)
 
 
@@ -76,10 +77,10 @@ dada2_params <- c("minOverlap","maxMismatch")
 
 stopifnot( all( names(params) %in% dada2_params))
 
-source(here::here("2019_06_11_reprocess_dada2_for_smaller_ASVs/dada2_pipeline/shared_functions.R"))
-
 fastq1 <- parse_filtered_file(opt$fastq1, file.path(opt$outdir,"filter_fastq"))
 fastq2 <- parse_filtered_file(opt$fastq2, file.path(opt$outdir,"filter_fastq"))
+
+stopifnot(file.exists(fastq1),file.exists(fastq2))
 
 message("using R1: ", fastq1)
 message("using R2: ", fastq2)

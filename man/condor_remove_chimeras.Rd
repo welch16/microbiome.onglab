@@ -5,7 +5,7 @@
 \title{generate the input file to remove chimeras from the sequence table with condor}
 \usage{
 condor_remove_chimeras(sequence_table_file, chim_param_file, chim_prefix,
-  chim_outdir, condor_file, batch_name, request_cores)
+  chim_outdir, condor_file, batch_name, request_cores, request_mem)
 }
 \arguments{
 \item{sequence_table_file}{name of the file with the sequence tables to merge (one p/line)}
@@ -21,6 +21,8 @@ condor_remove_chimeras(sequence_table_file, chim_param_file, chim_prefix,
 \item{batch_name}{string with the name of the batch}
 
 \item{request_cores}{number of cpus per machine}
+
+\item{request_mem}{number of GB required as memory}
 }
 \description{
 generate the input file to remove chimeras from the sequence table with condor

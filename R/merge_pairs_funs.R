@@ -36,6 +36,7 @@ get_param_merge_pairs <- function(param_name, param_frame){
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
 ##' @param request_cores number of cpus per machine
+##' @param request_mem number of GB required as memory
 ##' @export
 condor_merge_pairs <- function(
     merge_queue_file = "",
@@ -44,7 +45,8 @@ condor_merge_pairs <- function(
     error_rate_files = c("R1.rds","R2.rds"),
     condor_file = "./condor_merge_pairs",
     batch_name = "dada2_merge_pairs",
-    request_cores = 4
+    request_cores = 4,
+    request_mem = "4 GB"
 )
 {
 
@@ -68,6 +70,7 @@ condor_merge_pairs <- function(
       str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --sample_name $(sample) --fastq1 $(fastq1) --fastq2 $(fastq2) --learned_rates1 $(rates1) --learned_rates2 $(rates2) --param_file $(param_file) --outdir $(outdir) --cores ",request_cores),
       str_c("request_cpus     = ", request_cores),
+      str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
       str_c("script_r         = ", system.file("scripts/merge_pairs.R", package = "microbiome.onglab")),

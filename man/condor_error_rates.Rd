@@ -7,7 +7,8 @@
 condor_error_rates(error_queue_files = c("", ""),
   error_prefixes = c("R1", "R2"), error_param_file = "",
   error_outdir = ".", condor_file = "./condor_error_rates",
-  batch_name = "dada2_error_rates", request_cores = 4)
+  batch_name = "dada2_error_rates", request_cores = 4,
+  request_mem = "4 GB")
 }
 \arguments{
 \item{error_queue_files}{vector with names of the file with the c(R1,R2) fastq files}
@@ -23,6 +24,8 @@ condor_error_rates(error_queue_files = c("", ""),
 \item{batch_name}{string with the name of the batch}
 
 \item{request_cores}{number of cpus per machine}
+
+\item{request_mem}{number of GB required as memory}
 }
 \description{
 generate the input to learn the error rates with condor

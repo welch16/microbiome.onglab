@@ -5,7 +5,7 @@
 \title{generate the input file to label taxa with condor}
 \usage{
 condor_label_taxa(asv_file, taxa_model_file, taxa_prefix, taxa_outdir,
-  condor_file, batch_name, request_cores)
+  condor_file, batch_name, request_cores, request_mem = "4 GB")
 }
 \arguments{
 \item{asv_file}{rds file with the ASV table without chimeras}
@@ -21,6 +21,8 @@ condor_label_taxa(asv_file, taxa_model_file, taxa_prefix, taxa_outdir,
 \item{batch_name}{string with the name of the batch}
 
 \item{request_cores}{number of cpus per machine}
+
+\item{request_mem}{number of GB required as memory}
 }
 \description{
 generate the input file to label taxa with condor

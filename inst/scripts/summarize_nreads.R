@@ -30,6 +30,7 @@ stopifnot(
 library(magrittr)
 library(tidyverse)
 library(furrr)
+library(microbiome.onglab)
 
 plan(multiprocess,workers = opt$cores)
 
