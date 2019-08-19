@@ -28,12 +28,24 @@ As always, to load the package, we have to use the command:
 library(microbiome.onglab)
 ```
 
+to load the package. 
+
 # Scripts to run
 
+Generally speaking, there are many script to run. The main focus of this wrapper is on efficiency, so for every scripts in the directory:
 
-```{r}
+```{r pack, results='asis'}
 
+system.file("scripts",package = "microbiome.onglab")
 list.files(system.file("scripts", package = "microbiome.onglab"))
 
 ```
+
+there is a function that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file. For example, the function `condor_filter_trim` is associated to the `filter_and_trim_pairs.R` script, and would generate
+
+
+
+
+
+
 

@@ -3,6 +3,7 @@
 ##' @import dplyr
 ##' @import readr
 ##' @import optparse
+##' @import jsonlite
 NULL
 
 
@@ -32,6 +33,7 @@ parse_filtered_file <- function(fastq,outdir){
 ##' @export
 save_files <- function(all_samples, outfile )
 {
+  R1 <- R2 <- NULL
 
   all_samples %>% write_csv( outfile, col_names = FALSE)
   all_samples %>% select(R1) %>%
@@ -39,4 +41,15 @@ save_files <- function(all_samples, outfile )
   all_samples %>% select(R2) %>%
     write_csv(str_replace(outfile,".csv","_R2.csv"), col_names = FALSE)
 
+}
+
+warning_file <- function(file,warn_text)
+{
+  if(!file.exists(file)){
+    if(file == ""){
+      warning(warn_text)
+    }else{
+      warning(file," doesn't exists")
+    }
+  }
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/filter_and_trim_funs.R
 \name{get_param_filter_trim}
 \alias{get_param_filter_trim}
-\title{function to add default parameters}
+\title{function to add default parameters for filter and trim script}
 \usage{
 get_param_filter_trim(param_name, param_frame)
 }
@@ -16,5 +16,5 @@ the option in param_frame of the default value for
     \code{param_name}
 }
 \description{
-function to add default parameters
+function to add default parameters for filter and trim script
 }
