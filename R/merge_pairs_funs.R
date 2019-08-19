@@ -48,7 +48,7 @@ condor_merge_pairs <- function(
 )
 {
 
-  str_c = stringr::str_c
+  str_c <- stringr::str_c
   stopifnot(
     file.exists(error_rate_files[1]),
     file.exists(error_rate_files[2])
@@ -57,24 +57,19 @@ condor_merge_pairs <- function(
   warning_file(merge_queue_file, "Need to define merge pairs file")
   warning_file(merge_param_file, "Need to define merge pairs parameters file")
 
-  if(!dir.exists(merge_outdir))dir.create(merge_outdir,showWarnings = FALSE)
-
-  dir.create(file.path(merge_outdir,"err"),showWarnings = FALSE)
-  dir.create(file.path(merge_outdir,"log"),showWarnings = FALSE)
-  dir.create(file.path(merge_outdir,"out"),showWarnings = FALSE)
-
   file_connection <- file(condor_file)
+
+  rscript <- system("which Rscript", intern = TRUE)
 
   writeLines(
     c(
       "universe         = vanilla",
       str_c("batch_name       = ", batch_name),
-      "executable       = /s/bin/Rscript",
+      str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --sample_name $(sample) --fastq1 $(fastq1) --fastq2 $(fastq2) --learned_rates1 $(rates1) --learned_rates2 $(rates2) --param_file $(param_file) --outdir $(outdir) --cores ",request_cores),
       str_c("request_cpus     = ", request_cores),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
-      "basedr           = .",
       str_c("script_r         = ", system.file("scripts/merge_pairs.R", package = "microbiome.onglab")),
       str_c("param_file       = ", merge_param_file),
       str_c("outdir           = ", merge_outdir),

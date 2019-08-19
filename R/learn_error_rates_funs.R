@@ -45,18 +45,14 @@ condor_error_rates <- function(
   batch_name = "dada2_error_rates",
   request_cores = 4)
 {
-  str_c = stringr::str_c
+  str_c <- stringr::str_c
 
 
   warning_file(error_queue_files[1],"Need to define error rates R1 queue file")
   warning_file(error_queue_files[2],"Need to define error rates R2 queue file")
   warning_file(error_param_file,"Need to define error rates parameters file")
 
-  if(!dir.exists(error_outdir))dir.create(error_outdir,showWarnings = FALSE)
-
-  dir.create(file.path(error_outdir,"err"),showWarnings = FALSE)
-  dir.create(file.path(error_outdir,"log"),showWarnings = FALSE)
-  dir.create(file.path(error_outdir,"out"),showWarnings = FALSE)
+  rscript <- system("which Rscript", intern = TRUE)
 
   file_connection <- file(condor_file)
 
@@ -64,12 +60,11 @@ condor_error_rates <- function(
     c(
       "universe         = vanilla",
       str_c("batch_name       = ",batch_name),
-      "executable       = /s/bin/Rscript",
+      str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --rate_files $(rate_file) --param_file $(param_file) --outprefix $(outprefix) --outdir $(outdir) --cores ",request_cores),
       str_c("request_cpus     = ",request_cores),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
-      "basedr           = .",
       str_c("script_r         = ", system.file("scripts/learn_error_rates.R",package = "microbiome.onglab")),
       str_c("param_file       = ", error_param_file),
       str_c("outdir           = ", error_outdir),

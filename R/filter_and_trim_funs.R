@@ -46,16 +46,12 @@ condor_filter_trim <- function(
   batch_name = "dada2_trim_sequences",
   request_cores = 4)
 {
-  str_c = stringr::str_c
+  str_c <- stringr::str_c
 
   warning_file(trim_queue_file,"Need to define filter and trim queue file")
   warning_file(trim_param_file,"Need to define filter and trim parameters file")
 
-  if(!dir.exists(trim_outdir))dir.create(trim_outdir,showWarnings = FALSE)
-
-  dir.create(file.path(trim_outdir,"err"),showWarnings = FALSE)
-  dir.create(file.path(trim_outdir,"log"),showWarnings = FALSE)
-  dir.create(file.path(trim_outdir,"out"),showWarnings = FALSE)
+  rscript <- system.file("which Rscript",intern = TRUE)
 
   file_connection <- file(condor_file)
 
@@ -63,12 +59,11 @@ condor_filter_trim <- function(
     c(
       "universe         = vanilla",
       str_c("batch_name       = ", batch_name),
-      "executable       = /s/bin/Rscript",
+      str_c("executable       = ", rscript),
       str_c("args             = $(script_r) --sample_name $(sample) --fastq1 $(fastq1) --fastq2 $(fastq2) --param_file $(param_file) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ",request_cores),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
       "periodic_release = (NumJobStarts < 10) && ((CurrentTime - EnteredCurrentStatus) > 300)",
-      "basedr           = .",
       str_c("script_r         = ",system.file( "scripts/filter_and_trim_pairs.R",package = "microbiome.onglab")),
       str_c("queue_file       = ", trim_queue_file),
       str_c("param_file       = ", trim_param_file),

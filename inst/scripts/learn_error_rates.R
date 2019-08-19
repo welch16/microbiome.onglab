@@ -64,8 +64,6 @@ message("Output file: ", out_file)
 filtered_fastq <- read_tsv(opt$rate_files, col_names = FALSE)
 filtered_fastq %<>% pluck(names(filtered_fastq)[1])
 
-source(here::here("2019_06_11_reprocess_dada2_for_smaller_ASVs/dada2_pipeline/shared_functions.R"))
-
 filtered_fastq %<>% parse_filtered_file( file.path(opt$outdir,"filter_fastq"))
 
 if(!file.exists(out_file)){

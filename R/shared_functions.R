@@ -4,6 +4,9 @@
 ##' @import readr
 ##' @import optparse
 ##' @import jsonlite
+##' @import dada2
+##' @import DECIPHER
+##' @import furrr
 NULL
 
 

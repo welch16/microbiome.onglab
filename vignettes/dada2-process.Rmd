@@ -24,7 +24,7 @@ Before we start, there are better references that the ones I can provide in this
 
 As always, to load the package, we have to use the command:
 
-```{r setup,eval=FALSE}
+```{r setup,eval=TRUE,message=FALSE,warning=FALSE}
 library(microbiome.onglab)
 ```
 
@@ -34,14 +34,14 @@ to load the package.
 
 Generally speaking, there are many script to run. The main focus of this wrapper is on efficiency, so for every scripts in the directory:
 
-```{r pack, results='asis'}
+```{r pack}
 
 system.file("scripts",package = "microbiome.onglab")
 list.files(system.file("scripts", package = "microbiome.onglab"))
 
 ```
 
-there is a function that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file. For example, the function `condor_filter_trim` is associated to the `filter_and_trim_pairs.R` script, and would generate
+For every one of these scripts (except `create_file_structure.R`), there is a function that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file. For example, the function `condor_filter_trim` is associated to the `filter_and_trim_pairs.R` script, and would generate the instructions to run `filter_and_trim_pairs.R` with condor.
 
 
 
