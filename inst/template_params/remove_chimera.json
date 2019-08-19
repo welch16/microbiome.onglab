@@ -1,0 +1,10 @@
+[
+    {
+        "minSampleFraction": 0.9,
+        "ignoreNNegatives": 1,
+        "minFoldParentOverAbundance": 1.5,
+        "allowOneOf": "FALSE",
+        "minOneOffParentDistance": 4,
+        "maxShift": 16
+    }
+]

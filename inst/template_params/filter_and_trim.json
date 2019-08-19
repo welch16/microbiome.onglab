@@ -1,0 +1,19 @@
+[
+    {
+        "truncQ": 2,
+        "truncLen": [
+            220,
+            200
+        ],
+        "trimLeft": 0,
+        "trimRight": 0,
+        "maxLen": "Inf",
+        "minLen": 20,
+        "maxN": 0,
+        "minQ": 0,
+        "maxEE": [
+            3,
+            7
+        ]
+    }
+]

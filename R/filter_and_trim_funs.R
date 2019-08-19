@@ -11,9 +11,11 @@ get_param_filter_trim <- function(param_name, param_frame){
 
   if(is.null(out)){
 
-    if(param_name %in% c("truncLen","trimLeft","trimRight",
+    if(param_name %in% c("trimLeft","trimRight",
                   "maxN","minQ")) out <- 0
-    if(param_name %in% c("maxLen", "maxEE")) out <- Inf
+    if(param_name == "truncLen") out <- c(0,0)
+    if(param_name %in% c("maxLen")) out <- Inf
+    if(param_name == "maxEE") out <- c(Inf,Inf)
     if( param_name == "minLen") out <- 20
     if( param_name == "truncQ") out <- 2
 
