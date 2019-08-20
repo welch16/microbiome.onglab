@@ -2,6 +2,7 @@
 
 export(condor_error_rates)
 export(condor_filter_trim)
+export(condor_generate_all)
 export(condor_label_taxa)
 export(condor_make_sequence_table)
 export(condor_merge_pairs)
