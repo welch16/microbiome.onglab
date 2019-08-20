@@ -88,11 +88,9 @@ condor_generate_all <- function(condordir, prefix)
 {
   my_date <- Sys.Date()
   my_date <- stringr::str_replace_all(my_date,"-","_")
-
   prefix <- file.path(condordir,str_c(prefix,"_dada2"))
 
   condor_filter_trim(condor_file = str_c(prefix,"_filter_and_trim_",my_date))
-
   condor_error_rates(condor_file = str_c(prefix,"_learned_error_rates_",my_date))
   condor_merge_pairs(condor_file = str_c(prefix,"_merge_pairs_",my_date))
   condor_make_sequence_table(condor_file = str_c(prefix,"_make_seqtab_",my_date))

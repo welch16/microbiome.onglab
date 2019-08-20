@@ -187,12 +187,6 @@ condor_label_taxa <- function(
 
   warning_file(asv_file, "Need to define the remove chimeras file")
 
-  if(!dir.exists(taxa_outdir))dir.create(taxa_outdir,showWarnings = FALSE)
-
-  dir.create(file.path(taxa_outdir,"err"),showWarnings = FALSE)
-  dir.create(file.path(taxa_outdir,"log"),showWarnings = FALSE)
-  dir.create(file.path(taxa_outdir,"out"),showWarnings = FALSE)
-
   file_connection <- file(condor_file)
 
   rscript <- system("which Rscript", intern = TRUE)
