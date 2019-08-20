@@ -50,6 +50,7 @@ stopifnot(
 dir.create(opt$outdir, showWarnings = FALSE)
 
 library(magrittr)
+library(tidyverse)
 library(microbiome.onglab)
 library(dada2)
 library(jsonlite)
