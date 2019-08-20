@@ -79,3 +79,4 @@ create_file_structure <- function(outdir)
   dir.create(file.path(outdir,"ASV_tables","idtaxa"), showWarnings = FALSE)
 
 }
+

@@ -1,5 +1,6 @@
 ##' @importFrom jsonlite toJSON
 ##' @importFrom jsonlite fromJSON
+##' @importFrom stringr str_replace_all str_c
 NULL
 
 
@@ -53,4 +54,23 @@ dada2_param_remove_chimera <- function(paramfile)
                           package = "microbiome.onglab")
   move_file(template,paramfile)
 }
+
+
+##' copies all the parameter templates to a directory, and
+##' uses a prefix to identify all
+##' @param outdir directory where all the parameters are saved
+##' @param prefix prefix for all the files
+##' @export
+dada2_param_copy_all <- function(outdir,prefix)
+{
+  my_date <- stringr::str_replace_all(Sys.Date(),"-","_")
+  suffix <- stringr::str_c(my_date,".json")
+
+  dada2_param_filter_trim(file.path(outdir,str_c(prefix,"_filter_and_trim_",suffix)))
+  dada2_param_learn_error_rates(file.path(outdir,str_c(prefix,"_learn_error_rates_",suffix)))
+  dada2_param_merge_pairs(file.path(outdir,str_c(prefix,"_merge_pairs_",suffix)))
+  dada2_param_remove_chimera(file.path(outdir,str_c(prefix,"_remove_chimera_",suffix)))
+}
+
+
 
