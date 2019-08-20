@@ -1,8 +1,8 @@
 ---
-title: "Procesing microbiome data with dada2"
+title: "Processing microbiome data with dada2"
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Procesing microbiome data with dada2}
+  %\VignetteIndexEntry{Processing microbiome data with dada2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -43,11 +43,81 @@ list.files(system.file("scripts", package = "microbiome.onglab"))
 
 For every one of these scripts (except `create_file_structure.R`), there are one/two functions that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file, and whenever is necessary another `json` file with the parameters for that process. 
 
+
 ## Example with the filter and trim step
 
-For this step, there are two functions and one script to do this step.
+Even though this is the first step, the remaining steps follow a similar structure. In general, for every step, there are going to be 2 `R` functions, one that generates the `json` parameters, and one that runs the script with condor. For the `filter and trim` step, we would have the run:
+
+```{r param_file,warning=FALSE}
+param_file <- tempfile(fileext = ".json")
+dada2_param_filter_trim(param_file)
+```
+
+This generates a json parameter file, which needs to be edited with parameters that depend on the unique characteristics of the experiment.
+
+```{r param_file_show, echo = FALSE,warning=FALSE,results='hold'}
+
+cat(readLines(param_file))
+
+```
+
+Similarly, the `condor_filter_trim` function, would generate a file that needs to be edited, and then submitted to condor.
+
+```{r , condor,warning=FALSE}
+condor_file <- tempfile(fileext = ".cdr")
+condor_filter_trim(condor_file = condor_file)
+
+```
+
+The file looks as follows, and in this case at least the `queue_file`, `param_file`, and `outdir` would have to be manually edited.
+
+```{r condor_file_show, echo = FALSE,warning=FALSE}
+
+cat(readLines(condor_file),sep = "\n")
+
+```
 
 
+# Running all together
+
+We define the temp directory:
+
+```{r run_all, warning=FALSE}
+
+my_dir = file.path(tempdir(),"example")
+my_dir
+
+create_file_structure(my_dir)
+
+dir.create(file.path(my_dir,"dada2_params"))
+dada2_param_copy_all(outdir =  file.path(my_dir,"dada2_params"), prefix = "example")
+dir.create(file.path(my_dir,"condor"))
+condor_generate_all(condordir = file.path(my_dir,"condor"),prefix = "example")
+
+```
+
+After doing these steps, the project directory will have the following structure:
+
+```{r}
+
+list.files(my_dir,recursive = TRUE,include.dirs = TRUE)
+
+```
+
+## Running in condor
+
+After filling all the condor text files, these commands will run the whole pipeline
+
+```{bash, eval = FALSE}
+
+condor_submit condor/example_dada2_filter_and_trim_2019_08_20
+condor_submit condor/example_dada2_learned_error_rates_2019_08_20
+condor_submit condor/example_dada2_merge_pairs_2019_08_20           
+condor_submit condor/example_dada2_make_seqtab_2019_08_20    
+condor_submit condor/example_dada2_remove_chimeras_2019_08_20
+condor_submit condor/example_dada2_label_taxa_2019_08_20        
+
+```
 
 
 
