@@ -55,7 +55,7 @@ condor_filter_trim <- function(
   warning_file(trim_queue_file,"Need to define filter and trim queue file")
   warning_file(trim_param_file,"Need to define filter and trim parameters file")
 
-  rscript <- system.file("which Rscript",intern = TRUE)
+  rscript <- system("which Rscript", intern = TRUE)
 
   file_connection <- file(condor_file)
 

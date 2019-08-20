@@ -4,8 +4,10 @@
 \alias{condor_label_taxa}
 \title{generate the input file to label taxa with condor}
 \usage{
-condor_label_taxa(asv_file, taxa_model_file, taxa_prefix, taxa_outdir,
-  condor_file, batch_name, request_cores, request_mem = "4 GB")
+condor_label_taxa(asv_file = "", taxa_model_file = "",
+  taxa_prefix = "taxa", taxa_outdir = ".",
+  condor_file = "condor_label_taxa", batch_name = "dada2_label_taxa",
+  request_cores = 4, request_mem = "4 GB")
 }
 \arguments{
 \item{asv_file}{rds file with the ASV table without chimeras}

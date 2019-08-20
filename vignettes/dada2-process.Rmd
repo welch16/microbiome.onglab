@@ -45,7 +45,7 @@ For every one of these scripts (except `create_file_structure.R`), there are one
 
 ## Example with the filter and trim step
 
-
+For this step, there are two functions and one script to do this step.
 
 
 

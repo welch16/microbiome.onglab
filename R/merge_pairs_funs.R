@@ -51,10 +51,6 @@ condor_merge_pairs <- function(
 {
 
   str_c <- stringr::str_c
-  stopifnot(
-    file.exists(error_rate_files[1]),
-    file.exists(error_rate_files[2])
-  )
 
   warning_file(merge_queue_file, "Need to define merge pairs file")
   warning_file(merge_param_file, "Need to define merge pairs parameters file")

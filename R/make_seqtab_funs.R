@@ -96,14 +96,14 @@ get_param_chimeras <- function(param_name, param_frame){
 ##' @param request_mem number of GB required as memory
 ##' @export
 condor_remove_chimeras <- function(
-  sequence_table_file,
-  chim_param_file,
-  chim_prefix,
-  chim_outdir,
-  condor_file,
-  batch_name,
-  request_cores,
-  request_mem
+  sequence_table_file = "",
+  chim_param_file = "",
+  chim_prefix = "remove_chimeras",
+  chim_outdir = ".",
+  condor_file = "./condor_remove_chimeras",
+  batch_name = "dada2_remove_chimeras",
+  request_cores = 4,
+  request_mem = "4 GB"
 )
 {
 
@@ -169,19 +169,21 @@ get_tax_ids <- function(dna,rdata_file)
 ##' @param request_mem number of GB required as memory
 ##' @export
 condor_label_taxa <- function(
-  asv_file,
-  taxa_model_file,
-  taxa_prefix,
-  taxa_outdir,
-  condor_file,
-  batch_name,
-  request_cores,
+  asv_file = "",
+  taxa_model_file = "",
+  taxa_prefix = "taxa",
+  taxa_outdir = ".",
+  condor_file = "condor_label_taxa",
+  batch_name = "dada2_label_taxa",
+  request_cores = 4,
   request_mem = "4 GB"
 )
 {
   str_c <- stringr::str_c
 
-  stopifnot(file.exists(taxa_model_file))
+  if(!file.exists(taxa_model_file)){
+    warning("need to define taxa_model_file")
+  }
 
   warning_file(asv_file, "Need to define the remove chimeras file")
 
