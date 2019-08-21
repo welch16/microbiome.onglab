@@ -28,4 +28,6 @@ Imports:
     jsonlite,
     furrr,
     dada2,
-    DECIPHER
+    DECIPHER,
+    future,
+    tidyr
