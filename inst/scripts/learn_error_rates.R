@@ -75,7 +75,7 @@ if(!file.exists(out_file)){
 
   saveRDS(error_rates, file = out_file)
 
-  error_plot <- plotError(error_rates,nominalQ = TRUE)
+  error_plot <- plotErrors(error_rates,nominalQ = TRUE)
 
   ggsave(
     filename = plot_file,
