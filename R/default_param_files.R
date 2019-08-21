@@ -8,6 +8,10 @@ move_file <- function(template,paramfile)
 {
   warning("recall: edit ",paramfile, " manually")
   params <- jsonlite::fromJSON(template)
+  if(any(is.infinite(unlist(params)))){
+    inf_var <- which(is.infinite(unlist(params)))
+    params[[names(inf_var)]] = as.character(params[[names(inf_var)]])
+  }
   readr::write_lines(jsonlite::toJSON(params), paramfile)
 
 }
