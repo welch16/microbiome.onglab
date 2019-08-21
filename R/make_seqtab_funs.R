@@ -38,13 +38,12 @@ condor_make_sequence_table <- function(
     str_c("request_memory   = ", request_mem),
     "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
     "periodic_release = (NumJobStarts < 5) && ((CurrentTime - EnteredCurrentStatus) > 180)",
-    "basedr           = .",
     str_c("script_r         = ", system.file("scripts/make_sequence_table.R", package = "microbiome.onglab")),
     str_c("outdir           = ", make_outdir),
     "output           = $(outdir)/out/dada2_seqtab_$(outprefix).$(cluster).$(process).out",
     "error            = $(outdir)/err/dada2_seqtab_$(outprefix).$(cluster).$(process).err",
     "log              = $(outdir)/log/dada2_seqtab_$(outprefix).$(cluster).$(process).log",
-    str_c("queue_file        = ", make_queue_file),
+    str_c("queue_file       = ", make_queue_file),
     str_c("outprefix        = ", make_prefix),
     "queue 1"), file_connection)
 
