@@ -45,7 +45,7 @@ if(!file.exists(out_file)){
   names(dna) <- paste0("seq-",seq_along(dna))
 
   ## label taxa
-  taxa_id <- get_tax_ids(dna, opt$taxa_model)
+  taxa_id <- get_tax_ids(dna, opt$taxa_model,opt$cores)
 
   saveRDS(taxa_id,out_file)
 

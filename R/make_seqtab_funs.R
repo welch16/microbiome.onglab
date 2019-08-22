@@ -138,11 +138,19 @@ condor_remove_chimeras <- function(
 
 }
 
-get_tax_ids <- function(dna,rdata_file)
+
+##' auxiliar function to label the taxa
+##'
+##' @param dna \code{DNAStringSet} with the ASV sequences
+##' @param rdata_file idtaxa model learned saved as a RData file
+##' @param cores number of cpus to use
+##' @return a \code{data.frame} with the labelled taxa
+##' @export
+get_tax_ids <- function(dna,rdata_file,cores = NULL)
 {
   trainingSet <- NULL
   load(rdata_file)
-  ids <- IdTaxa(dna, trainingSet, strand="top", processors=NULL, verbose=FALSE) # use all processors
+  ids <- IdTaxa(dna, trainingSet, strand="top", processors=cores, verbose=FALSE) # use all processors
   ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species") # ranks of interest
   # Convert the output object of class "Taxa" to a matrix analogous to the output from assignTaxonomy
   taxid <- t(sapply(ids, function(x) {
