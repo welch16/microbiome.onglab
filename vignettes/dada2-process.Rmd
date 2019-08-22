@@ -1,6 +1,8 @@
 ---
 title: "Processing microbiome data with dada2"
-output: BiocStyle::html_document
+output:
+  rmarkdown::html_document:
+    theme: cerulean
 vignette: >
   %\VignetteIndexEntry{Processing microbiome data with dada2}
   %\VignetteEngine{knitr::rmarkdown}
@@ -9,6 +11,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  dev = "png",
   collapse = TRUE,
   comment = "#>"
 )
@@ -118,8 +121,6 @@ condor_submit condor/example_dada2_remove_chimeras_2019_08_20
 condor_submit condor/example_dada2_label_taxa_2019_08_20        
 
 ```
-
-# Quality control after processing
 
 
 

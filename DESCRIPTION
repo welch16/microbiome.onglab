@@ -30,4 +30,7 @@ Imports:
     dada2,
     DECIPHER,
     future,
-    tidyr
+    tidyr,
+    scales,
+    ggplot2,
+    forcats

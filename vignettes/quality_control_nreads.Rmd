@@ -1,0 +1,102 @@
+---
+title: "Quality control diagnostics of number of reads per sample"
+output: 
+  rmarkdown::html_document:
+    theme: cerulean
+vignette: >
+  %\VignetteIndexEntry{Quality control diagnostics of number of reads per sample}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  dev = "png",
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(dplyr)
+library(ggplot2)
+
+
+theme_set(theme_light())
+
+```
+
+```{r setup,eval=TRUE,message=FALSE,warning=FALSE,include=FALSE}
+library(microbiome.onglab)
+```
+
+
+We included few functions to quantify the samples' quality by summarizing the ammount of reads in every step of the pipeline. The main function that summarize the read abundance for each samples is:
+
+```{r include=FALSE}
+
+summarize_number_reads
+
+```
+
+The function depends on the previous condor run, for example to check the number of reads in the `example` ASV table from the `microbiome` experiment, we would use the following command:
+
+```{r , include=TRUE,eval = FALSE}
+
+nreads_summary <- summarize_number_reads(reads_file = "./queue_file.csv",
+                                         outprefix = "example",
+                                         outdir = "./microbiome",
+                                         cores = 4)
+
+```
+
+```{r include=FALSE}
+
+nreads_summary <- system.file("qc_example/breastmilk_read_summary.rds", 
+            package = "microbiome.onglab") %>% readRDS() 
+
+```
+
+Which will return a `tibble` that looks as follows:
+
+```{r }
+
+nreads_summary %>% select(-name,-sample)
+
+```
+
+where the fields are:
+
+* `reads.in` - # of reads in the raw fastq files
+* `reads.out` - # of reads after the filter and trim step
+* `reads.merged_pairs` - # of reads in the merged ASVs' called by `dada2` for each fastq pair
+* `reads.asv_table` - # of reads in the ASV table, after merging all samples` ASVs.
+
+Similarly, the `perc.*` fields corresponds at the ratio between the `reads.*`, and the `reads.in` columns. 
+
+# Diagnostic functions
+
+We added a few simple functions to explore an experiment. For example the function `plot_abundance_per_step` displays the relative abundance for each step, and we can clearly notice that one sample is not quite alright.
+
+```{r rela,fig.height=4,fig.width=8,out.width=900,dpi = 200}
+plot_abundance_per_step( nreads_summary , 
+                         summary_fun = median,
+                         relative = TRUE)
+```
+
+Alternatively, we could explore the absolute abundance per step, and change the function:
+
+```{r rela2,fig.height=4,fig.width=8,out.width=900,dpi = 200}
+plot_abundance_per_step( nreads_summary ,
+                         summary_fun = mean, 
+                         relative = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
