@@ -35,18 +35,6 @@ library(microbiome.onglab)
 library(DECIPHER)
 library(jsonlite)
 
-if(!file.exists(opt$param_file)){
-  params <- data.frame()
-}else{
-  params <- fromJSON(opt$param_file, flatten = TRUE)
-}
-
-dada2_params <- c("minSampleFraction","ignoreNNegatives",
-                  "minFoldParentOverAbundance","allowOneOf","minOneOffParentDistance","maxShift")
-
-stopifnot( all( names(params) %in% dada2_params))
-
-message("Removing bimeras")
 message("Input files in: ", opt$dada_file)
 message("Output file: ", out_file)
 
