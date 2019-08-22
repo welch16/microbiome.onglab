@@ -23,7 +23,8 @@ opt <- parse_args(OptionParser(option_list = optList))
 
 options(mc.cores = opt$cores)
 
-out_file = file.path(opt$outdir,paste0(opt$outprefix,"_labels.rds"))
+out_file = file.path(opt$outdir,"ASV_tables","idtaxa",
+                     paste0(opt$outprefix,"_labels.rds"))
 
 
 stopifnot(file.exists(opt$asv_file))
