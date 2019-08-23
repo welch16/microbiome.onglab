@@ -1,3 +1,6 @@
+#!/usr/bin/env Rscript
+
+## wrapper for sourcetracker run
 
 library(optparse)
 
@@ -10,6 +13,9 @@ opt_list <- list(
 	            It is expected a tibble with two columns: sample | neg_control, where the
 	            elements of the second column are character vectors with the neg. controls
 	            that correspond to the sample"),
+  make_option("--param_file", action = "store_true", type = "character",
+              help = "Location of the parameter file in json format, if not provided
+        	the script will use sourcetracker default parameters"),
   make_option("--top_asvs", action = "store_true", type = "numeric",
               default = 50,
               help = "Number of the top ASVs to use"),
@@ -26,14 +32,12 @@ opt_list <- list(
               help = "Number of cores to be used for parallel processing"))
 
 
+sourcetracker_url <-
+  "https://raw.githubusercontent.com/danknights/sourcetracker/master/src/SourceTracker.r"
+
 opt <- parse_args(OptionParser(option_list = opt_list))
 
-out_file = opt$outfile
-
-# opt$asv_file = "/z/Comp/onglab/Projects/WISC/results/rwelch/2019_07_19_dada2_dust_parameter_tune/dust_run_tune/ASV_tables/dust_dust_2018_asv_wo_bimeras.rds"
-
-opt$asv_file = "./dust_2M/ASV_tables/breastmilk_dust_asv_wo_bimeras.rds"
-opt$neg_control_file = "./rds/2019_08_22_breastmilk_dust_negcontrols.rds"
+out_file = opt$outfile ## may change if we change the directory structure
 
 stopifnot(file.exists(opt$asv_file),
           file.exists(opt$neg_control_file))
@@ -47,9 +51,24 @@ if(tolower(opt$rarefaction_depth) == "inf"){
 library(magrittr)
 library(tidyverse)
 library(parallel)
+library(microbiome.onglab)
+
 
 asv_table <- readRDS(opt$asv_file)
 neg_controls <- readRDS(opt$neg_control_file)
+
+
+if(!file.exists(opt$param_file)){
+  params <- data.frame()
+}else{
+  params <- fromJSON(opt$param_file, flatten = TRUE)
+}
+
+dada2_params <- c("alpha1","alpha2","beta")
+
+stopifnot( all( names(params) %in% dada2_params))
+
+
 
 neg_controls_groups <- neg_controls %>%
   mutate( neg_control_full = map_chr(neg_control, str_c,collapse = "_")) %>%
@@ -73,12 +92,13 @@ controls.ix <- str_to_lower(samples) %in% str_to_lower(all_negative_controls)
 ## only use the top_asvs in order to make the code run faster
 asv_table <- asv_table[,seq_len(opt$top_asvs)]
 
-source("/z/Comp/onglab/programs/sourcetracker/src/SourceTracker.r")
-alpha1 <- alpha2 <- 0.001 ### add in parameter files
+script <- RCurl::getURL(sourcetracker_url)
+eval(parse(text = script))
 
-# , test = NULL, burnin = 100, nrestarts = 10, ndraws.per.restart = 1,
-# 2     delay = 10, alpha1 = 0.001, alpha2 = 0.1, beta = 10, rarefaction_depth = 1000,
-# 3     verbosity = 1, full.results = FALSE)
+alpha1 <- get_param_sourcetracker("alpha1", params)
+alpha2 <- get_param_sourcetracker("alpha2", params)
+beta <- get_param_sourcetracker("beta",params)
+
 
 neg_controls %<>% nest(-id,.key = "group")
 
@@ -91,7 +111,6 @@ create_sourcetracker_object <- function(group,asv,rarefaction_depth)
   sourcetracker(asv[samples,],asv[neg_controls,],rarefaction_depth = rarefaction_depth)
 
 }
-
 
 split_run <- function(stracker,group,asv,split_size)
 {
@@ -112,14 +131,14 @@ split_run <- function(stracker,group,asv,split_size)
   }
 
   split_results <- mclapply(split_samples,
-                            function(x)predict(stracker,x,alpha1 = alpha1 , alpha2 = alpha2),
+                            function(x)predict(stracker,x,
+                                               alpha1 = alpha1 ,
+                                               alpha2 = alpha2,
+                                               beta = beta),
                             mc.cores = opt$cores)
 
   split_results
 }
-
-
-
 
 merge_results <- function(split_results)
 {
@@ -157,7 +176,7 @@ neg_controls %<>%
     stracker = map(group,create_sourcetracker_object,asv_table,opt$rarefaction_depth),
     preds = map2(stracker,group,split_run,asv_table,opt$max_split_size))
 
-# merge parallel results
+# merge parallel results and clean them to tibble / data.frame
 neg_controls %<>%
   mutate(
     results = map(preds, merge_results),
@@ -223,26 +242,3 @@ neg_controls %<>%
 
 
 neg_controls %>% saveRDS(out_file)
-
-saveRDS(merged_results, out_file)
-
-
-# # Estimate leave-one-out source proportions in training data
-# results.train <- predict(st, alpha1=alpha1, alpha2=alpha2)
-
-
-# plot(merged_results, type=  "bar")
-
-# # plot results
-# labels <- sprintf('%s %s', envs,desc)
-# plot(results, labels[test.ix], type='pie')
-
-# other plotting functions
-# plot(results, labels[test.ix], type='bar')
-# plot(results, labels[!test.ix], type='dist')
-# plot(results.train, labels[train.ix], type='pie')
-# plot(results.train, labels[train.ix], type='bar')
-# plot(results.train, labels[train.ix], type='dist')
-
-# plot results with legend
-# plot(results, type='dist', include.legend=TRUE, env.colors=c('#47697E','#5B7444','#CC6666','#79BEDB','#885588'))

@@ -34,4 +34,5 @@ Imports:
     scales,
     ggplot2,
     forcats,
-    abind
+    abind,
+    RCurl
