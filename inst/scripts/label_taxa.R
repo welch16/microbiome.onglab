@@ -7,6 +7,8 @@ optList <-  list(
               help = "A rds file with the ASV table previously computed"),
   make_option("--taxa_model", action = "store_true", type = "character",
               help = "Name of the learned model used to label the ASV sequences"),
+  make_option("--thr", action = "store_true", type = "numeric",default = 60,
+              help = "Confidence threshold, higher levels indicates higher accuracy"),
   make_option("--outprefix", action = "store_true", type = "character",
               default = "dada2",
               help = "Name of the output file with the labelled ASVs after
@@ -46,7 +48,7 @@ if(!file.exists(out_file)){
   names(dna) <- paste0("seq-",seq_along(dna))
 
   ## label taxa
-  taxa_id <- get_tax_ids(dna, opt$taxa_model,opt$cores)
+  taxa_id <- get_tax_ids(dna, opt$taxa_model,opt$thr,opt$cores)
 
   saveRDS(taxa_id,out_file)
 

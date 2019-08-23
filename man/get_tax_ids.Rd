@@ -4,12 +4,14 @@
 \alias{get_tax_ids}
 \title{auxiliar function to label the taxa}
 \usage{
-get_tax_ids(dna, rdata_file, cores = NULL)
+get_tax_ids(dna, rdata_file, confidence_thr = 60, cores = NULL)
 }
 \arguments{
 \item{dna}{\code{DNAStringSet} with the ASV sequences}
 
 \item{rdata_file}{idtaxa model learned saved as a RData file}
+
+\item{confidence_thr}{confidence threshold, higher levels indicates higher accuracy}
 
 \item{cores}{number of cpus to use}
 }

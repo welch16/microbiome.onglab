@@ -143,14 +143,17 @@ condor_remove_chimeras <- function(
 ##'
 ##' @param dna \code{DNAStringSet} with the ASV sequences
 ##' @param rdata_file idtaxa model learned saved as a RData file
+##' @param confidence_thr confidence threshold, higher levels indicates higher accuracy
 ##' @param cores number of cpus to use
 ##' @return a \code{data.frame} with the labelled taxa
 ##' @export
-get_tax_ids <- function(dna,rdata_file,cores = NULL)
+get_tax_ids <- function(dna,rdata_file,confidence_thr = 60,cores = NULL)
 {
   trainingSet <- NULL
   load(rdata_file)
-  ids <- IdTaxa(dna, trainingSet, strand="top", processors=cores, verbose=FALSE) # use all processors
+  ids <- IdTaxa(dna, trainingSet, strand="top",
+                threshold = confidence_thr,
+                processors=cores, verbose=FALSE) # use all processors
   ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species") # ranks of interest
   # Convert the output object of class "Taxa" to a matrix analogous to the output from assignTaxonomy
   taxid <- t(sapply(ids, function(x) {
@@ -172,6 +175,7 @@ get_tax_ids <- function(dna,rdata_file,cores = NULL)
 ##' @param taxa_outdir directory where the output is going to be saved
 ##' @param condor_file name of the file with condor instructions
 ##' @param batch_name string with the name of the batch
+##' @param confidence_thr confidence threshold, higher levels indicates higher accuracy
 ##' @param request_cores number of cpus per machine
 ##' @param request_mem number of GB required as memory
 ##' @export
@@ -182,6 +186,7 @@ condor_label_taxa <- function(
   taxa_outdir = ".",
   condor_file = "condor_label_taxa",
   batch_name = "dada2_label_taxa",
+  confidence_thr = 60,
   request_cores = 4,
   request_mem = "4 GB"
 )
@@ -203,7 +208,7 @@ condor_label_taxa <- function(
       "universe         = vanilla",
       str_c("batch_name       = ", batch_name),
       str_c("executable       = ", rscript),
-      str_c("args             = $(script_r) --asv_file $(infile) --taxa_model $(taxamodel) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
+      str_c("args             = $(script_r) --asv_file $(infile) --taxa_model $(taxamodel) --thr $(conf) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ", request_cores),
       str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
@@ -214,6 +219,7 @@ condor_label_taxa <- function(
       "output           = $(outdir)/out/dada2_label_taxa_$(outprefix).$(cluster).$(process).out",
       "error            = $(outdir)/err/dada2_label_taxa_$(outprefix).$(cluster).$(process).err",
       "log              = $(outdir)/log/dada2_label_taxa_$(outprefix).$(cluster).$(process).log",
+      str_c("thr              = ", confidence_thr),
       str_c("taxamodel        = ", taxa_model_file),
       str_c("outprefix        = ", taxa_prefix),
       "queue 1"), file_connection)
