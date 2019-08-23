@@ -76,5 +76,16 @@ dada2_param_copy_all <- function(outdir,prefix)
   dada2_param_remove_chimera(file.path(outdir,str_c(prefix,"_remove_chimera_",suffix)))
 }
 
+##' creates a default param file for the source tracker check
+##' @param paramfile name of the output json file with the sourcetracker parameters
+##' @export
+sourcetracker_parameters <- function(paramfile)
+{
+  template <- system.file("templates_params/sourcetracker.json",
+                          package = "microbiome.onglab")
+  move_file(template, paramfile)
+}
+
+
 
 

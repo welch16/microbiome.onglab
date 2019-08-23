@@ -33,4 +33,6 @@ Imports:
     tidyr,
     scales,
     ggplot2,
-    forcats
+    forcats,
+    abind,
+    RCurl

@@ -6,6 +6,7 @@
 ##' @import dada2
 ##' @import DECIPHER
 ##' @import furrr
+##' @import abind
 NULL
 
 
