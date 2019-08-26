@@ -81,7 +81,7 @@ dada2_param_copy_all <- function(outdir,prefix)
 ##' @export
 sourcetracker_parameters <- function(paramfile)
 {
-  template <- system.file("templates_params/sourcetracker.json",
+  template <- system.file("template_params/sourcetracker.json",
                           package = "microbiome.onglab")
   move_file(template, paramfile)
 }
