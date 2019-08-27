@@ -151,7 +151,7 @@ get_tax_ids <- function(dna,rdata_file,confidence_thr = 60,cores = NULL)
 {
   trainingSet <- NULL
   load(rdata_file)
-  ids <- IdTaxa(dna, trainingSet, strand="top",
+  ids <- IdTaxa(dna, trainingSet, strand="both",
                 threshold = confidence_thr,
                 processors=cores, verbose=FALSE) # use all processors
   ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species") # ranks of interest
