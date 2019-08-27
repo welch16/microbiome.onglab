@@ -208,7 +208,7 @@ condor_label_taxa <- function(
       "universe         = vanilla",
       str_c("batch_name       = ", batch_name),
       str_c("executable       = ", rscript),
-      str_c("args             = $(script_r) --asv_file $(infile) --taxa_model $(taxamodel) --thr $(conf) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
+      str_c("args             = $(script_r) --asv_file $(infile) --taxa_model $(taxamodel) --thr $(thr) --outprefix $(outprefix) --outdir $(outdir) --cores ", request_cores),
       str_c("request_cpus     = ", request_cores),
       str_c("request_memory   = ", request_mem),
       "on_exit_hold     = (ExitBySignal == True) || (ExitCode != 0)",
