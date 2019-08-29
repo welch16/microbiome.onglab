@@ -37,25 +37,26 @@ sourcetracker_url <-
 
 opt <- parse_args(OptionParser(option_list = opt_list))
 
-out_file = opt$outfile ## may change if we change the directory structure
+out_file <- opt$outfile ## may change if we change the directory structure
 
 stopifnot(file.exists(opt$asv_file),
           file.exists(opt$neg_control_file))
 
 if(tolower(opt$rarefaction_depth) == "inf"){
-  opt$rarefaction_depth = NULL
+  opt$rarefaction_depth <- NULL
 }else{
-  opt$rarefaction_depth = as.numeric(opt$rarefaction_depth)
+  opt$rarefaction_depth <- as.numeric(opt$rarefaction_depth)
 }
 
 library(magrittr)
 library(tidyverse)
 library(parallel)
 library(microbiome.onglab)
-
+library(jsonlite)
 
 asv_table <- readRDS(opt$asv_file)
 neg_controls <- readRDS(opt$neg_control_file)
+
 
 
 if(!file.exists(opt$param_file)){
@@ -78,8 +79,8 @@ neg_controls_groups <- neg_controls %>%
 neg_controls %<>%
   mutate(
     neg_control_full = map_chr(neg_control,str_c,collapse = "_")) %>%
-  left_join(neg_controls_groups) %>%
-  select(-n,-neg_control_full)
+  left_join(neg_controls_groups, by = "neg_control_full") %>%
+  select(-n, -neg_control_full)
 
 samples <- rownames(asv_table)
 
@@ -90,7 +91,7 @@ all_negative_controls <- neg_controls %>% pull(neg_control) %>%
 controls.ix <- str_to_lower(samples) %in% str_to_lower(all_negative_controls)
 
 ## only use the top_asvs in order to make the code run faster
-asv_table <- asv_table[,seq_len(opt$top_asvs)]
+asv_table <- asv_table[, seq_len(opt$top_asvs)]
 
 script <- RCurl::getURL(sourcetracker_url)
 eval(parse(text = script))
@@ -100,13 +101,13 @@ alpha2 <- get_param_sourcetracker("alpha2", params)
 beta <- get_param_sourcetracker("beta",params)
 
 
-neg_controls %<>% nest(-id,.key = "group")
+neg_controls %<>% nest(-id, .key = "group")
 
 
-create_sourcetracker_object <- function(group,asv,rarefaction_depth)
+create_sourcetracker_object <- function(group, asv, rarefaction_depth)
 {
   samples <- group %>% pull(sample)
-  neg_controls <- pull(group,neg_control) %>% unlist() %>% unique()
+  neg_controls <- pull(group, neg_control) %>% unlist() %>% unique()
 
   sourcetracker(asv[samples,],asv[neg_controls,],rarefaction_depth = rarefaction_depth)
 
@@ -132,13 +133,25 @@ split_run <- function(stracker,group,asv,split_size)
 
   split_results <- mclapply(split_samples,
                             function(x)predict(stracker,x,
-                                               alpha1 = alpha1 ,
-                                               alpha2 = alpha2,
-                                               beta = beta),
+                                              alpha1 = alpha1,
+                                              alpha2 = alpha2,
+                                              beta = beta,
+                                              verbosity = TRUE),
                             mc.cores = opt$cores)
 
   split_results
 }
+
+# train SourceTracker object on training data
+message("creating sourcetracker objects")
+neg_controls %<>% 
+	mutate( stracker = map(group,create_sourcetracker_object,asv_table,opt$rarefaction_depth))
+    
+message("processing samples with sourcetracker mixture model")
+neg_controls %<>%
+    mutate( preds = map2(stracker, group, split_run, asv_table, opt$max_split_size))
+
+
 
 merge_results <- function(split_results)
 {
@@ -170,13 +183,8 @@ merge_results <- function(split_results)
   invisible(out)
 }
 
-# train SourceTracker object on training data
-neg_controls %<>%
-  mutate(
-    stracker = map(group,create_sourcetracker_object,asv_table,opt$rarefaction_depth),
-    preds = map2(stracker,group,split_run,asv_table,opt$max_split_size))
-
 # merge parallel results and clean them to tibble / data.frame
+message("merging results")
 neg_controls %<>%
   mutate(
     results = map(preds, merge_results),
@@ -186,7 +194,7 @@ neg_controls %<>%
     train.envs = map(results,"train.envs"),
     samplenames = map(results,"samplenames"))
 
-clean_proportions <- function(proportions,proportions_sd)
+clean_proportions <- function(proportions, proportions_sd)
 {
 
   proportions %<>% as.data.frame() %>%
@@ -218,8 +226,8 @@ clean_draws <- function(draw,train.envs,samplenames)
   samplenames %<>% str_replace_all("\\-","\\_")
 
   dimnames(draw) <- list(samplenames,
-                         train.envs,
-                         NULL)
+                        train.envs,
+                        NULL)
 
   flat_draw <- draw %>% as.data.frame() %>%
     as_tibble() %>%
@@ -237,8 +245,14 @@ neg_controls %<>%
     proportions = map2(proportions,proportions_sd,clean_proportions))
 
 neg_controls %<>%
-  select(-proportions_sd,-train.envs,-samplenames,-stracker,
-         -preds,-merged_results,-results)
+  select(
+  	-stracker,
+		-proportions_sd, 
+  	-train.envs, 
+  	-samplenames, 
+  	-stracker, 
+    -preds, 
+    -results)
 
 
 neg_controls %>% saveRDS(out_file)
