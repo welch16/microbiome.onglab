@@ -35,4 +35,5 @@ Imports:
     ggplot2,
     forcats,
     abind,
-    RCurl
+    RCurl,
+    tibble

@@ -41,65 +41,31 @@ message("Output file: ", out_file)
 asv_table <- readRDS(opt$asv_table)
 idtaxa <- readRDS(opt$idtaxa)
 
-prevalence <- tibble(
-	id = str_c("asv",seq_len(ncol(asv_table)),sep = "_"),
-	seq = colnames(asv_table),
-	prev = apply( asv_table, 2 , FUN = function(x)sum(x  > 0)),
-	nreads = colSums(asv_table),
-	ave_reads = colMeans(asv_table))
-	
-idtaxa %<>% as_tibble()
-	
-	
-any_na <- function(x)any(is.na(x))
-	
-idtaxa %<>%
-	mutate( id = str_c("asv",seq_len(ncol(asv_table)), sep = "_")) %>% 
-	mutate_if(any_na, list( ~ fct_explicit_na(.,"unlabelled")))
-	
-nsamples <- nrow(asv_table)
+prevalence <- compute_prevalence(asv_table,idtaxa)
 
-prevalence %<>% inner_join(idtaxa,by = "id")
-	
-
-
-prevalence_summary <- prevalence %>% 
-	group_by(phylum) %>% 
+prevalence_summary <- prevalence %>%
+	group_by(phylum) %>%
 	summarize(
 		n = n(),
 		nreads = sum(nreads),
 		max_reads = max(nreads),
-		prev = sum(prev)) %>% 
+		prev = sum(prev)) %>%
 	mutate(
 		prev_ratio = prev / n)
-		
-prevalence_summary %>% arrange(prev_ratio) %>% as.data.frame %>% 
-	mutate( cum_reads = cumsum(nreads),
-			prop = round(cum_reads / max(cum_reads) * 100,4))
-	
-prev_check <- prevalence_summary %>% 
-	filter(prev_ratio <= 1.2 ) %>% 
+
+prev_check <- prevalence_summary %>%
+	filter(prev_ratio <= 1.2 ) %>%
 	pull(phylum) %>% as.character()
-	
-prevalence %<>%  
+
+prevalence %<>%
 	mutate(
 		to_check = if_else(phylum %in% prev_check,"yes","no"))
 theme_set(theme_bw())
-		
-prev_plot <- prevalence %>% 
-	ggplot()+geom_point(aes(nreads,prev / nsamples,colour = to_check), alpha = .7)+
-	scale_x_log10( labels = scales::comma_format(accuracy = 1))+
-	scale_y_continuous( labels = scales::percent_format(accuracy = 1))+
-	labs(
-		colour = "reads in \n single asv",
-		x = "total abundance",
-		y = "prevalence")+
-	facet_wrap( . ~ phylum)+
-	scale_color_manual(values = c(`yes` = "red",`no` = "navyblue"))+
-	theme(
-		legend.position = "top",
-		strip.background = element_blank())
-		
+
+nsamples <- nrow(asv_table)
+
+
+prev_plot <- plot_prevalence(prevalence,nsamples)
 prevalence %>% saveRDS(out_file)
 prevalence_summary %>% saveRDS(summary_file)
 
