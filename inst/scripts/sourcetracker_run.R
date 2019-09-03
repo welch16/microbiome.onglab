@@ -50,14 +50,12 @@ if(tolower(opt$rarefaction_depth) == "inf"){
 
 library(magrittr)
 library(tidyverse)
-library(parallel)
 library(microbiome.onglab)
 library(jsonlite)
+library(BiocParallel)
 
 asv_table <- readRDS(opt$asv_file)
 neg_controls <- readRDS(opt$neg_control_file)
-
-
 
 if(!file.exists(opt$param_file)){
   params <- data.frame()
@@ -106,15 +104,17 @@ neg_controls %<>% nest(-id, .key = "group")
 
 create_sourcetracker_object <- function(group, asv, rarefaction_depth)
 {
+
   samples <- group %>% pull(sample)
   neg_controls <- pull(group, neg_control) %>% unlist() %>% unique()
 
-  sourcetracker(asv[samples,],asv[neg_controls,],rarefaction_depth = rarefaction_depth)
+  sourcetracker(asv[samples,],neg_controls,rarefaction_depth = rarefaction_depth)
 
 }
 
 split_run <- function(stracker,group,asv,split_size)
 {
+
   samples <- pull(group,sample)
   sample_table <- asv[samples,]
   if( nrow(sample_table) > split_size){
@@ -131,13 +131,13 @@ split_run <- function(stracker,group,asv,split_size)
     split_samples <- list(sample_table)
   }
 
-  split_results <- mclapply(split_samples,
+  split_results <- bplapply(split_samples,
                             function(x)predict(stracker,x,
                                               alpha1 = alpha1,
                                               alpha2 = alpha2,
                                               beta = beta,
                                               verbosity = TRUE),
-                            mc.cores = opt$cores)
+                            BPPARAM = MulticoreParam(workers = opt$cores))
 
   split_results
 }
