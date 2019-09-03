@@ -78,6 +78,7 @@ create_file_structure <- function(outdir)
   dir.create(file.path(outdir,"merged_pairs_summary"), showWarnings = FALSE)
   dir.create(file.path(outdir,"ASV_tables"), showWarnings = FALSE)
   dir.create(file.path(outdir,"ASV_tables","idtaxa"), showWarnings = FALSE)
+  dir.create(file.path(outdir,"ASV_tables", "prevalence"), showWarnings = FALSE)
 
 }
 
