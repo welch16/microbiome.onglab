@@ -30,8 +30,8 @@ compute_prevalence <- function(asv_table, idtaxa)
     ave_reads = colMeans(asv_table))
 
   idtaxa <- mutate(idtaxa,
-                   id = str_c("asv",seq_len(ncol(asv_table)), sep = "_"))
-  idtaxa <- mutate_if(any_na, list( ~ forcats::fct_explicit_na(.,"unlabelled")))
+                  id = str_c("asv",seq_len(ncol(asv_table)), sep = "_"))
+  idtaxa <- mutate_if(idtaxa,any_na, list( ~ forcats::fct_explicit_na(.,"unlabelled")))
 
   nsamples <- nrow(asv_table)
   dplyr::inner_join(prevalence,idtaxa,by = "id")
