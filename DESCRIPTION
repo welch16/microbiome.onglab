@@ -36,4 +36,5 @@ Imports:
     forcats,
     abind,
     RCurl,
-    tibble
+    tibble,
+    shiny
