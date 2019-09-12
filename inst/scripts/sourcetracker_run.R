@@ -105,10 +105,14 @@ neg_controls %<>% nest(-id, .key = "group")
 create_sourcetracker_object <- function(group, asv, rarefaction_depth)
 {
 
-  samples <- group %>% pull(sample)
+	samples <- group %>% pull(sample)
   neg_controls <- pull(group, neg_control) %>% unlist() %>% unique()
 
-  sourcetracker(asv[samples,],neg_controls,rarefaction_depth = rarefaction_depth)
+	mat <- asv[samples,]
+	if(length(samples) == 1){
+		mat <- matrix(mat,nrow = 1)
+  }
+  sourcetracker(mat,neg_controls,rarefaction_depth = rarefaction_depth)
 
 }
 
