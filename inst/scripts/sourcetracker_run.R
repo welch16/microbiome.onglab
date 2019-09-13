@@ -149,7 +149,7 @@ split_run <- function(stracker,group,asv,split_size)
 }
 
 
-# message("processing samples with sourcetracker mixture model")
+
 message("separating large samples")
 neg_controls %<>%  
     mutate( st_pred = map2(stracker, group, split_run, asv_table, opt$max_split_size))
@@ -159,6 +159,7 @@ results <- neg_controls %>%
 	unnest() %>% 
 	left_join(select(neg_controls,id,stracker),by = "id")
 
+message("processing samples with sourcetracker mixture model")
 results %<>% 
 	mutate(
 		pred = bpmapply(function(x,y)predict(x,y,alpha1 = alpha1, alpha2 = alpha2, beta = beta,
