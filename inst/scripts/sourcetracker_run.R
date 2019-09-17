@@ -102,54 +102,71 @@ beta <- get_param_sourcetracker("beta",params)
 neg_controls %<>% nest(-id, .key = "group")
 
 
+get_matrix <- function(asv,samples)
+{
+	mat <- asv[samples,]
+	if(length(samples) == 1){
+		mat <- matrix(mat,nrow = 1)	
+	}
+	mat
+}
+
 create_sourcetracker_object <- function(group, asv, rarefaction_depth)
 {
 
-  samples <- group %>% pull(sample)
+	samples <- group %>% pull(sample)
   neg_controls <- pull(group, neg_control) %>% unlist() %>% unique()
 
-  sourcetracker(asv[samples,],neg_controls,rarefaction_depth = rarefaction_depth)
+	mat <- get_matrix(asv,samples)
+  sourcetracker(mat,neg_controls,rarefaction_depth = rarefaction_depth)
 
-}
-
-split_run <- function(stracker,group,asv,split_size)
-{
-
-  samples <- pull(group,sample)
-  sample_table <- asv[samples,]
-  if( nrow(sample_table) > split_size){
-
-    splits <- seq_len(ceiling(nrow(sample_table) / split_size))
-    splits <- rep(splits,each = split_size)
-    splits <- splits[seq_len(nrow(sample_table))]
-    split_samples <- split(samples,splits)
-
-    split_samples <- map(split_samples, ~ sample_table[.,])
-
-
-  }else{
-    split_samples <- list(sample_table)
-  }
-
-  split_results <- bplapply(split_samples,
-                            function(x)predict(stracker,x,
-                                              alpha1 = alpha1,
-                                              alpha2 = alpha2,
-                                              beta = beta,
-                                              verbosity = TRUE),
-                            BPPARAM = MulticoreParam(workers = opt$cores))
-
-  split_results
 }
 
 # train SourceTracker object on training data
 message("creating sourcetracker objects")
 neg_controls %<>% 
 	mutate( stracker = map(group,create_sourcetracker_object,asv_table,opt$rarefaction_depth))
-    
+
+
+split_run <- function(stracker,group,asv,split_size)
+{
+	
+  samples <- pull(group,sample)
+  sample_table <- get_matrix(asv,samples)
+  
+  if( nrow(sample_table) > split_size){
+		
+    splits <- seq_len(ceiling(nrow(sample_table) / split_size))
+    splits <- rep(splits,each = split_size)
+    splits <- splits[seq_len(nrow(sample_table))]
+    split_samples <- split(samples,splits)
+    split_samples <- map(split_samples, ~ sample_table[.,])
+  }else{
+    split_samples <- list(sample_table)
+  }
+	
+  split_samples
+}
+
+
+
+message("separating large samples")
+neg_controls %<>%  
+    mutate( st_pred = map2(stracker, group, split_run, asv_table, opt$max_split_size))
+
+results <- neg_controls %>% 
+	select(id,st_pred) %>% 
+	unnest() %>% 
+	left_join(select(neg_controls,id,stracker),by = "id")
+
 message("processing samples with sourcetracker mixture model")
-neg_controls %<>%
-    mutate( preds = map2(stracker, group, split_run, asv_table, opt$max_split_size))
+results %<>% 
+	mutate(
+		pred = bpmapply(function(x,y)predict(x,y,alpha1 = alpha1, alpha2 = alpha2, beta = beta,
+							verbosity = TRUE), stracker, st_pred,
+							BPPARAM = MulticoreParam(workers = opt$cores),SIMPLIFY = FALSE))
+
+
 
 
 
@@ -185,18 +202,20 @@ merge_results <- function(split_results)
 
 # merge parallel results and clean them to tibble / data.frame
 message("merging results")
-neg_controls %<>%
-  mutate(
-    results = map(preds, merge_results),
-    draws = map(results,"draws"),
-    proportions = map(results, "proportions"),
-    proportions_sd = map(results, "proportions_sd"),
-    train.envs = map(results,"train.envs"),
-    samplenames = map(results,"samplenames"))
+results %<>%  
+	select(id,pred) %>% 
+	nest(pred,.key = "preds") %>% 
+	mutate(
+	preds = map(preds, pull , pred),
+	results = map(preds, merge_results),
+  draws = map(results,"draws"),
+  proportions = map(results, "proportions"),
+  proportions_sd = map(results, "proportions_sd"),
+  train.envs = map(results,"train.envs"),
+  samplenames = map(results,"samplenames"))
 
 clean_proportions <- function(proportions, proportions_sd)
 {
-
   proportions %<>% as.data.frame() %>%
     rownames_to_column("sample") %>%
     as_tibble()
@@ -221,6 +240,7 @@ clean_proportions <- function(proportions, proportions_sd)
 
 clean_draws <- function(draw,train.envs,samplenames)
 {
+
   draw <- aperm(draw, perm = c(3,2,1))
   train.envs %<>% str_replace_all("\\-","\\_")
   samplenames %<>% str_replace_all("\\-","\\_")
@@ -239,20 +259,23 @@ clean_draws <- function(draw,train.envs,samplenames)
 
 }
 
-neg_controls %<>%
+results %<>% 
+	left_join(select(neg_controls,id,group),by = "id") %>%  ## brief correction for groups of length 1
+	mutate( 
+		samplenames2 = map(group, pull,sample),
+		samplenames = if_else(map_lgl(samplenames,is.null), samplenames2,samplenames)) %>% 
+	select(-samplenames2) %>% 
   mutate(
     draws = pmap(list(draws,train.envs,samplenames), clean_draws),
     proportions = map2(proportions,proportions_sd,clean_proportions))
 
-neg_controls %<>%
+results %<>% 
   select(
-  	-stracker,
 		-proportions_sd, 
   	-train.envs, 
   	-samplenames, 
-  	-stracker, 
-    -preds, 
-    -results)
+  	-preds, 
+    -results) %>% 
+    select(id,group,draws,proportions)
 
-
-neg_controls %>% saveRDS(out_file)
+results %>% saveRDS(out_file)
