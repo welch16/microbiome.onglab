@@ -159,6 +159,20 @@ results <- neg_controls %>%
 	unnest() %>% 
 	left_join(select(neg_controls,id,stracker),by = "id")
 
+### fix st pred, the issue was that when splitting into groups, there was one 
+### group with one sample, which caused problems when merging the results
+check_if_matrix <- function(pred)
+{
+	
+	if(class(pred) != "matrix"){
+		pred %<>% as.matrix() %>% t()
+	}
+	pred
+
+}
+
+results %<>% mutate( st_pred = map(st_pred,check_if_matrix))
+
 message("processing samples with sourcetracker mixture model")
 results %<>% 
 	mutate(
