@@ -7,7 +7,8 @@
 summarize_number_reads(reads_file, outprefix, outdir, cores)
 }
 \arguments{
-\item{reads_file, }{a 3 column csv file with columns: sample | R1.fastq | R2.fastq}
+\item{reads_file, }{a 3 column csv file with columns:
+sample | R1.fastq | R2.fastq}
 
 \item{outprefix}{prefix used in the final ASV table}
 

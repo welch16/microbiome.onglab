@@ -4,11 +4,16 @@
 \alias{condor_error_rates}
 \title{generate the input to learn the error rates with condor}
 \usage{
-condor_error_rates(error_queue_files = c("", ""),
-  error_prefixes = c("R1", "R2"), error_param_file = "",
-  error_outdir = ".", condor_file = "./condor_error_rates",
-  batch_name = "dada2_error_rates", request_cores = 4,
-  request_mem = "4 GB")
+condor_error_rates(
+  error_queue_files = c("", ""),
+  error_prefixes = c("R1", "R2"),
+  error_param_file = "",
+  error_outdir = ".",
+  condor_file = "./condor_error_rates",
+  batch_name = "dada2_error_rates",
+  request_cores = 4,
+  request_mem = "4 GB"
+)
 }
 \arguments{
 \item{error_queue_files}{vector with names of the file with the c(R1,R2) fastq files}

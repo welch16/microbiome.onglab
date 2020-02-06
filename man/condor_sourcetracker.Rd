@@ -4,13 +4,20 @@
 \alias{condor_sourcetracker}
 \title{generates the condor file to performing quality control with sourcertracker}
 \usage{
-condor_sourcetracker(sourcetracker_asvfile = "",
-  sourcetracker_negcontrol = "", sourcetracker_paramfile = "",
-  sourcetracker_outdir = ".", top_asv = 50, max_split_size = 30,
-  rarefaction_depth = NULL, sourcetracker_prefix = "sourcetracker",
+condor_sourcetracker(
+  sourcetracker_asvfile = "",
+  sourcetracker_negcontrol = "",
+  sourcetracker_paramfile = "",
+  sourcetracker_outdir = ".",
+  top_asv = 50,
+  max_split_size = 30,
+  rarefaction_depth = NULL,
+  sourcetracker_prefix = "sourcetracker",
   condor_file = "./condor_sourcetracker",
-  batch_name = "sourcetracker_run", request_cores = 8,
-  request_mem = "4 GB")
+  batch_name = "sourcetracker_run",
+  request_cores = 8,
+  request_mem = "4 GB"
+)
 }
 \arguments{
 \item{sourcetracker_asvfile}{name of the rds file with the asv matrix}
