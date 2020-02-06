@@ -9,6 +9,11 @@
 ## or there is not json file, then the code will use the
 ## dada2's default parameters.
 
+
+info=Sys.info();
+message(paste0(names(info)," : ",info,"\n"))
+
+
 library(optparse)
 
 opt_list <- list(
@@ -21,7 +26,7 @@ opt_list <- list(
               help = "Location of the R2 fastq.gz file"),
   make_option("--param_file", action = "store_true", type = "character",
               help = "Location of the parameter file in json format, if not provided
-        	the script will do dada2::filterAndTrim with all the default parameters"),
+          the script will do dada2::filterAndTrim with all the default parameters"),
   make_option("--outdir", action = "store_true", type = "character",
               default = tempdir(),
               help = "Location of the output directory"),
@@ -105,4 +110,8 @@ if(!file.exists(out_file)){
 
   saveRDS(summary_out, file = out_file)
   message("Done! Summary file saved at ", out_file)
+} else {
+  message("Existing summary file ", out_file, " found. Delete that file if you want to rerun sample ", opt$sample_name, ".")
 }
+
+

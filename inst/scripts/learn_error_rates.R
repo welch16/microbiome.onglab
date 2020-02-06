@@ -10,6 +10,11 @@
 ## or there is not json file, then the code will use the
 ## dada2's default parameters.
 
+
+info=Sys.info();
+message(paste0(names(info)," : ",info,"\n"))
+
+
 library(optparse)
 
 opt_list <- list(

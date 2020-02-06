@@ -1,4 +1,9 @@
 #!/usr/bin/env Rscript
+
+info=Sys.info();
+message(paste0(names(info)," : ",info,"\n"))
+
+
 library(optparse)
 
 opt_list <- list(

@@ -12,6 +12,11 @@
 ## The first two methods barely require a parameter, while the third one
 ## requires a whole set of parameters that tune the behaviour of the matches reads
 
+
+info=Sys.info();
+message(paste0(names(info)," : ",info,"\n"))
+
+
 library(optparse)
 
 opt_list <- list(

@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+info=Sys.info();
+message(paste0(names(info)," : ",info,"\n"))
+
 ## wrapper for sourcetracker run
 
 library(optparse)
