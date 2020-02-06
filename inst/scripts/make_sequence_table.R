@@ -64,7 +64,7 @@ all_files %>%
     filter(!has_pairs) %>%
     select(sample_name, out_file) %>%
     deframe() %>%
-    walk2(names(.), .f=~message("Dropping sample ", .x, ". No merged pairs file ", .y))
+    walk2(names(.), .f=~message("Dropping sample ", .y, ". No merged pairs file ", .x))
 
 all_files %<>%
   filter(has_pairs) %>%
