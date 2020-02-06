@@ -73,9 +73,9 @@ condor_filter_trim <- function(
       str_c("queue_file       = ", trim_queue_file),
       str_c("param_file       = ", trim_param_file),
       str_c("outdir           = ", trim_outdir),
-      "output           = $(outdir)/out/dada2_filter_trim_$(sample_name).$(cluster).$(process).out",
-      "error            = $(outdir)/err/dada2_filter_trim_$(sample_name).$(cluster).$(process).err",
-      "log              = $(outdir)/log/dada2_filter_trim_$(sample_name).$(cluster).$(process).log",
+      "output           = $(outdir)/out/dada2_filter_trim_$(sample).$(cluster).$(process).out",
+      "error            = $(outdir)/err/dada2_filter_trim_$(sample).$(cluster).$(process).err",
+      "log              = $(outdir)/log/dada2_filter_trim_$(sample).$(cluster).$(process).log",
       "queue sample, fastq1, fastq2 from $(queue_file)"),file_connection)
 
   close(file_connection)

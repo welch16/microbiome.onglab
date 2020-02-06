@@ -73,9 +73,9 @@ condor_merge_pairs <- function(
       str_c("param_file       = ", merge_param_file),
       str_c("outdir           = ", merge_outdir),
       str_c("queue_file       = ", merge_queue_file),
-      "output           = $(outdir)/out/dada2_merge_pairs_$(sample_name).$(cluster).$(process).out",
-      "error            = $(outdir)/err/dada2_merge_pairs_$(sample_name).$(cluster).$(process).err",
-      "log              = $(outdir)/log/dada2_merge_pairs_$(sample_name).$(cluster).$(process).log",
+      "output           = $(outdir)/out/dada2_merge_pairs_$(sample).$(cluster).$(process).out",
+      "error            = $(outdir)/err/dada2_merge_pairs_$(sample).$(cluster).$(process).err",
+      "log              = $(outdir)/log/dada2_merge_pairs_$(sample).$(cluster).$(process).log",
       str_c("rates1           = ", error_rate_files[1]),
       str_c("rates2           = ", error_rate_files[2]),
       "queue sample, fastq1, fastq2 from $(queue_file)"), file_connection)
