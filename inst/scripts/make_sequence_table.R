@@ -20,8 +20,8 @@ library(optparse)
 
 opt_list <- list(
   make_option("--queue_file", action = "store_true", type = "character",
-              help = "Name of a text file with the location of the
-        		filtered and trimmed files used to learn the error rates"),
+              help = "Name of the master queue file. We will use the sample names to 
+              locate {outdir}/merged_pairs/{sample_name}_merged_pairs.rds"),
   make_option("--outprefix", action = "store_true", type = "character",
               default = "learned_error_rates",
               help = "Name of the output file with learned error rates, the full file name will
@@ -55,7 +55,19 @@ all_files %<>%
   ) %>%
   select(-X2,-X3)
 
+# We will remove rows where file does not exist
+all_files %<>% 
+  mutate(has_pairs=file.exists(out_file))
+
+# report which samples we're dropping
+all_files %>% 
+    filter(!has_pairs) %>%
+    select(sample_name, out_file) %>%
+    deframe() %>%
+    walk2(names(.), .f=~message("Dropping sample ", .x, ". No merged pairs file ", .y))
+
 all_files %<>%
+  filter(has_pairs) %>%
   mutate(
     merged_pairs = mclapply(out_file,readRDS),
     nASVs = map_int(merged_pairs,nrow)
