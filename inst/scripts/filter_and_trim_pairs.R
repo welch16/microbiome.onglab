@@ -79,7 +79,7 @@ message("filter and trim for files:")
 message("fastq1: ", opt$fastq1)
 message("fastq2: ", opt$fastq2)
 
-message("output files")
+message("output files will be created:")
 message("filtered fastq1: ", fastq1_filtered)
 message("filtered fastq2: ", fastq2_filtered)
 
