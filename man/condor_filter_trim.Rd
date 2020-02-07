@@ -16,7 +16,8 @@ condor_filter_trim(
 )
 }
 \arguments{
-\item{trim_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
+\item{trim_queue_file}{name of the file with the queue,
+it has 3 columns sample_name | R1.fastq | R2.fastq}
 
 \item{trim_param_file}{name of the file with the filter and trim parameters}
 

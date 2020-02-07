@@ -17,15 +17,11 @@ NULL
 #' @export
 summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
   `.` <- end1 <- end2 <- NULL
-  name <- fold_change <- reads.out <- NULL
-  reads.in <- reads.merged_pairs <- NULL
-  reads.asv_table <- NULL
-
+  name <- fold_change <- NULL
+  
   future::plan(future::multiprocess, workers = cores)
 
-  stopifnot(
-    file.exists(reads_file),
-    dir.exists(outdir))
+  stopifnot(file.exists(reads_file), dir.exists(outdir))
 
   ### read input file, i.e. the 3 column file
   input_files <- read_csv(reads_file, col_names = FALSE) %>%
@@ -33,45 +29,52 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
 
   input_files %<>%
     dplyr::mutate(
-      summ = file.path( outdir, "filter_fastq_summary",
+      summ = file.path(outdir, "filter_fastq_summary",
         stringr::str_c(name, "_trim_summary.rds")) %>%
         furrr::future_map(readRDS)) %>%
     tidyr::unnest() %>%
     dplyr::select(-fold_change)
 
-  input_files %<>% select(-R1,-R2) %>%
+  input_files %<>% select(-R1, -R2) %>%
     mutate(
-      reads.merged_pairs = file.path(outdir,"merged_pairs",
-                                   paste0(name,"_merged_pairs.rds")) %>%
+      reads.merged_pairs = file.path(outdir, "merged_pairs",
+                                   paste0(name, "_merged_pairs.rds")) %>%
         furrr::future_map(readRDS) %>%
-        furrr::future_map_dbl( ~ sum(.$abundance)))
+        furrr::future_map_dbl(~ sum(.$abundance)))
 
-  asv_table <- readRDS(file.path(outdir,"ASV_tables",paste0(outprefix,"_sequence_table.rds")))
+  asv_table <- readRDS(
+    file.path(outdir, "ASV_tables",
+      stringr::str_c(outprefix, "_sequence_table.rds")))
 
   asv_table %<>% {
     rs <- rowSums(.)
     tibble::tibble(
       name = names(rs),
-      reads.asv_table = rs)}
+      reads.asv_table = rs)
+  }
 
-  input_files %<>% inner_join(asv_table,by = "name")
+  input_files %<>% inner_join(asv_table, by = "name")
   input_files %>%
     mutate(
       perc.out = reads.out / reads.in,
       perc.merged_pairs = reads.merged_pairs / reads.in,
-      perc.asv_table = reads.asv_table / reads.in )
+      perc.asv_table = reads.asv_table / reads.in)
 
 }
 
 
-##' compares the (relative) abundance for each step
-##' @param nreads_summary output of the \code{summarize_number_reads} function
-##' @param summary_fun function used to summarize the trend, the default function is the \code{median}
-##' @param relative boolean indicator determining wheter comparing the relative abundance
-##' @return a \code{ggplot} object
-##' @export
-plot_abundance_per_step <- function(nreads_summary, summary_fun = median, relative = FALSE)
-{
+#' compares the (relative) abundance for each step
+#' @param nreads_summary output of the \code{summarize_number_reads} function
+#' @param summary_fun function used to summarize the trend,
+#'  the default function is the \code{median}
+#' @param relative boolean indicator determining wheter comparing the
+#'  relative abundance
+#' @return a \code{ggplot} object
+#' @export
+plot_abundance_per_step <- function(
+  nreads_summary,
+  summary_fun = median,
+  relative = FALSE) {
   name <- step <- sample <- NULL
   if(relative){
 

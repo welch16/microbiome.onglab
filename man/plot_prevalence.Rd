@@ -7,7 +7,8 @@
 plot_prevalence(prevalence, nsamples)
 }
 \arguments{
-\item{prevalence}{tibble with prevalence statistic computed by \code{compute_prevalence}}
+\item{prevalence}{tibble with prevalence statistic
+computed by \code{compute_prevalence}}
 
 \item{nsamples}{integer with the number of samples in the data}
 }

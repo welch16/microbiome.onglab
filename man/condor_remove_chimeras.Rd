@@ -2,7 +2,8 @@
 % Please edit documentation in R/make_seqtab_functions.R
 \name{condor_remove_chimeras}
 \alias{condor_remove_chimeras}
-\title{generate the input file to remove chimeras from the sequence table with condor}
+\title{generate the input file to remove chimeras from the sequence
+ table with condor}
 \usage{
 condor_remove_chimeras(
   sequence_table_file = "",
@@ -16,7 +17,8 @@ condor_remove_chimeras(
 )
 }
 \arguments{
-\item{sequence_table_file}{name of the file with the sequence tables to merge (one p/line)}
+\item{sequence_table_file}{name of the file with the sequence
+tables to merge (one p/line)}
 
 \item{chim_param_file}{name of the remove chimeras parameter file}
 
@@ -33,5 +35,6 @@ condor_remove_chimeras(
 \item{request_mem}{number of GB required as memory}
 }
 \description{
-generate the input file to remove chimeras from the sequence table with condor
+generate the input file to remove chimeras from the sequence
+ table with condor
 }

@@ -19,7 +19,8 @@ condor_label_taxa(
 \arguments{
 \item{asv_file}{rds file with the ASV table without chimeras}
 
-\item{taxa_model_file}{RData file with ta learned taxa model to use with \code{DECIPHER}}
+\item{taxa_model_file}{RData file with ta learned taxa model to use
+with \code{DECIPHER}}
 
 \item{taxa_prefix}{name of the output file}
 
@@ -29,7 +30,8 @@ condor_label_taxa(
 
 \item{batch_name}{string with the name of the batch}
 
-\item{confidence_thr}{confidence threshold, higher levels indicates higher accuracy}
+\item{confidence_thr}{confidence threshold, higher levels
+indicates higher accuracy}
 
 \item{request_cores}{number of cpus per machine}
 

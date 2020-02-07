@@ -15,7 +15,8 @@ condor_make_sequence_table(
 )
 }
 \arguments{
-\item{make_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
+\item{make_queue_file}{name of the file with the queue,
+it has 3 columns sample_name | R1.fastq | R2.fastq}
 
 \item{make_prefix}{prefix name for the sequence table output file}
 

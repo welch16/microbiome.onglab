@@ -16,11 +16,14 @@ condor_error_rates(
 )
 }
 \arguments{
-\item{error_queue_files}{vector with names of the file with the c(R1,R2) fastq files}
+\item{error_queue_files}{vector with names of the file with the c(R1,R2)
+fastq files}
 
-\item{error_prefixes}{vector with the names of the output error rates prefix for the c(R1,R2) files}
+\item{error_prefixes}{vector with the names of the output error rates
+prefix for the c(R1,R2) files}
 
-\item{error_param_file}{name of the file with the learn error rates parameters}
+\item{error_param_file}{name of the file with the
+learned error rates parameters}
 
 \item{error_outdir}{directory where the output is going to be saved}
 

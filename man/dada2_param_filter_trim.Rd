@@ -7,7 +7,8 @@
 dada2_param_filter_trim(paramfile)
 }
 \arguments{
-\item{paramfile}{name of the output json file with the filter and trim parameters}
+\item{paramfile}{name of the output json file with the
+filter and trim parameters}
 }
 \description{
 creates a default param file for the filter and trim process
