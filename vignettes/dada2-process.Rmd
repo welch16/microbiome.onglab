@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+## Introduction
 
 Before we start, there are better references that the ones I can provide in this document:
 
@@ -31,9 +31,9 @@ As always, to load the package, we have to use the command:
 library(microbiome.onglab)
 ```
 
-to load the package. 
+to load the package.
 
-# Scripts to run
+## Scripts to run
 
 Generally speaking, there are many script to run. The main focus of this wrapper is on efficiency, so for every scripts in the directory:
 
@@ -44,10 +44,9 @@ list.files(system.file("scripts", package = "microbiome.onglab"))
 
 ```
 
-For every one of these scripts (except `create_file_structure.R`), there are one/two functions that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file, and whenever is necessary another `json` file with the parameters for that process. 
+For every one of these scripts (except `create_file_structure.R`), there are one/two functions that generates an associated [condor](https://research.cs.wisc.edu/htcondor/) file, and whenever is necessary another `json` file with the parameters for that process.
 
-
-## Example with the filter and trim step
+### Example with the filter and trim step
 
 Even though this is the first step, the remaining steps follow a similar structure. In general, for every step, there are going to be 2 `R` functions, one that generates the `json` parameters, and one that runs the script with condor. For the `filter and trim` step, we would have the run:
 
@@ -80,8 +79,7 @@ cat(readLines(condor_file),sep = "\n")
 
 ```
 
-
-# Running all together
+## Running all together
 
 We define the temp directory:
 
@@ -115,12 +113,9 @@ After filling all the condor text files, these commands will run the whole pipel
 
 condor_submit condor/example_dada2_filter_and_trim_2019_08_20
 condor_submit condor/example_dada2_learned_error_rates_2019_08_20
-condor_submit condor/example_dada2_merge_pairs_2019_08_20           
-condor_submit condor/example_dada2_make_seqtab_2019_08_20    
+condor_submit condor/example_dada2_merge_pairs_2019_08_20
+condor_submit condor/example_dada2_make_seqtab_2019_08_20
 condor_submit condor/example_dada2_remove_chimeras_2019_08_20
-condor_submit condor/example_dada2_label_taxa_2019_08_20        
+condor_submit condor/example_dada2_label_taxa_2019_08_20
 
 ```
-
-
-
