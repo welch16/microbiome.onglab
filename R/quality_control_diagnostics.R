@@ -145,7 +145,7 @@ plot_abundance_per_step <- function(
 #' @export
 plot_quality_profiles <- function(sample_tibble, pdf_filename) {
 
-  if (ncol(sample_tibble) >= 3) {
+  if (ncol(sample_tibble) > 3) {
     warning("sample_tibble has more than 3 columns, using the first 3")
   }
   vars <- names(sample_tibble)
