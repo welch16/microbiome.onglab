@@ -22,18 +22,21 @@ condor_sourcetracker(
 \arguments{
 \item{sourcetracker_asvfile}{name of the rds file with the asv matrix}
 
-\item{sourcetracker_negcontrol}{name of the rds file with the relationship between samples and negative controls}
+\item{sourcetracker_negcontrol}{name of the rds file with the relationship
+between samples and negative controls}
 
 \item{sourcetracker_paramfile}{json file with sourcetracker's parameters}
 
 \item{sourcetracker_outdir}{directory where the results are saved}
 
-\item{top_asv}{number of ASVs to be used with sourcetracker to accelerate performance}
+\item{top_asv}{number of ASVs to be used with sourcetracker to
+accelerate performance}
 
 \item{max_split_size}{max. number of samples to do by a cpu}
 
-\item{rarefaction_depth}{parameter to control for ASVs (OTUs) with higher abundance. This makes all taxa to have at most this abundance
-(by default NULL skips this step)}
+\item{rarefaction_depth}{parameter to control for ASVs (OTUs) with higher
+abundance. This makes all taxa to have at most this abundance
+ (by default NULL skips this step)}
 
 \item{sourcetracker_prefix}{prefix of the file with the results}
 
@@ -46,6 +49,7 @@ condor_sourcetracker(
 \item{request_mem}{Memory request by condor}
 }
 \description{
-sourcetracker (Knights et al 2013, https://dx.doi.org/10.1038%2Fnmeth.1650) fits a mixture model of the samples with sources as components, in our
+sourcetracker (Knights et al 2013, https://dx.doi.org/10.1038%2Fnmeth.1650)
+fits a mixture model of the samples with sources as components, in our
 case we use the negative controls as such.
 }

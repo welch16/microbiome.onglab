@@ -37,4 +37,5 @@ Imports:
     abind,
     RCurl,
     tibble,
-    shiny
+    shiny,
+    tidyselect

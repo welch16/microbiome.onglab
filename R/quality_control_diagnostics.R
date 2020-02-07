@@ -1,6 +1,7 @@
 #' @import future
-#' @import furrr
 #' @import ggplot2
+#' @import furrr
+#' @import tidyselect
 #' @importFrom tidyr unnest
 #' @importFrom tidyr gather
 #' @importFrom forcats fct_relevel
@@ -18,7 +19,7 @@ NULL
 summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
   `.` <- end1 <- end2 <- NULL
   name <- fold_change <- NULL
-  
+
   future::plan(future::multiprocess, workers = cores)
 
   stopifnot(file.exists(reads_file), dir.exists(outdir))
@@ -76,50 +77,55 @@ plot_abundance_per_step <- function(
   summary_fun = median,
   relative = FALSE) {
   name <- step <- sample <- NULL
-  if(relative){
 
-    nreads_summary <- select(nreads_summary,name,sample,contains("perc"))
-    nreads_summary <- mutate(nreads_summary,perc.in = 1)
+  if (relative) {
+
+    nreads_summary <- dplyr::select(nreads_summary,
+      name, sample, tidyselect::contains("perc"))
+    nreads_summary <- dplyr::mutate(nreads_summary, perc.in = 1)
 
   }else{
-
-    nreads_summary <- select(nreads_summary,name,sample,contains("reads"))
-
+    nreads_summary <- dplyr::select(nreads_summary,
+      name, sample, tidyselect::contains("reads"))
   }
 
-  nreads_summary <- tidyr::gather(nreads_summary,step,value,-name,-sample)
+  nreads_summary <- tidyr::gather(nreads_summary,
+    step, value, -name, -sample)
   nreads_summary <- mutate(nreads_summary,
-      step = stringr::str_remove(step,"reads."),
-      step = stringr::str_remove(step,"perc."),
-      step = factor(step) %>% fct_relevel("in","out","merged_pairs"))
+      step = stringr::str_remove(step, "reads."),
+      step = stringr::str_remove(step, "perc."),
+      step = factor(step) %>% fct_relevel("in", "out", "merged_pairs"))
 
-  fun_summary <- group_by(nreads_summary,step)
-  fun_summary <- summarize(fun_summary, value = summary_fun(value))
+  fun_summary <- dplyr::group_by(nreads_summary, step)
+  fun_summary <- dplyr::summarize(fun_summary, value = summary_fun(value))
 
   base_plot <- nreads_summary %>%
-    ggplot(aes(step,value))+
-    geom_boxplot()+
-    geom_point(alpha = 1/4,shape = 21)+
-    geom_line(aes(group = name),alpha = 1/4)+
-    geom_line(data = fun_summary,size = 1.5,aes(group = 1), linetype = 2,
-              colour = "red")+
-    theme(
+    ggplot2::ggplot(aes(step, value)) +
+    ggplot2::geom_boxplot() +
+    ggplot2::geom_point(alpha = 0.25, shape = 21) +
+    ggplot2::geom_line(aes(group = name), alpha = 0.25) +
+    ggplot2::geom_line(data = fun_summary, size = 1.5,
+      ggplot2::aes(group = 1), linetype = 2, colour = "red") +
+    ggplot2::theme(
       legend.position = "none",
-      strip.text.y = element_text(angle = -90, size =10),
-      strip.background = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.major.x = element_blank()
-    )+
-    labs(
-      x = "processing step",
-      y = str_c(if_else(relative,"relative",""), "abundance after step",sep =" "))
+      strip.text.y = ggplot2::element_text(angle = -90, size = 10),
+      strip.background = ggplot2::element_blank(),
+      panel.grid.minor.x = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_blank()) +
+    ggplot2::labs(
+      x = "pstringr::rocess
+        ing step",
+      y = stringr::str_c(
+        dplyr::if_else(relative, "relative", ""),
+          "abundance after step", sep = " "))
 
-  if(relative){
+  if (relative) {
     base_plot +
-      scale_y_continuous(labels = scales::percent_format())
+      ggplot2::scale_y_continuous(labels = scales::percent_format())
   }else{
     base_plot +
-      scale_y_continuous(labels = scales::comma_format(scale = 1e-3,suffix = "K"))
+      ggplot2::scale_y_continuous(
+        labels = scales::comma_format(scale = 1e-3, suffix = "K"))
   }
 
 
