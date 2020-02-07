@@ -4,15 +4,16 @@
 \alias{plot_abundance_per_step}
 \title{compares the (relative) abundance for each step}
 \usage{
-plot_abundance_per_step(nreads_summary, summary_fun = median,
-  relative = FALSE)
+plot_abundance_per_step(nreads_summary, summary_fun = median, relative = FALSE)
 }
 \arguments{
 \item{nreads_summary}{output of the \code{summarize_number_reads} function}
 
-\item{summary_fun}{function used to summarize the trend, the default function is the \code{median}}
+\item{summary_fun}{function used to summarize the trend,
+the default function is the \code{median}}
 
-\item{relative}{boolean indicator determining wheter comparing the relative abundance}
+\item{relative}{boolean indicator determining wheter comparing the
+relative abundance}
 }
 \value{
 a \code{ggplot} object

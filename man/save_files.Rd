@@ -9,10 +9,10 @@ save_files(all_samples, outfile)
 }
 \arguments{
 \item{all_samples}{a \code{tibble} with 3 columns:
-name, R1, R2}
+name, end1, end2}
 
 \item{outfile}{the file where the full tibble is going to be saved,
-the R1 and R2 files, are going to share almost the same name
+the end1 and end2 files, are going to share almost the same name
 but replacing `.csv` with `_R1.csv` and `_R2.csv`, respectively.}
 }
 \description{

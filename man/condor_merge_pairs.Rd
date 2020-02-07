@@ -5,14 +5,20 @@
 \title{generate the input to filter and trim the fastq files
 with condor}
 \usage{
-condor_merge_pairs(merge_queue_file = "", merge_param_file = "",
-  merge_outdir = ".", error_rate_files = c("R1.rds", "R2.rds"),
+condor_merge_pairs(
+  merge_queue_file = "",
+  merge_param_file = "",
+  merge_outdir = ".",
+  error_rate_files = c("R1.rds", "R2.rds"),
   condor_file = "./condor_merge_pairs",
-  batch_name = "dada2_merge_pairs", request_cores = 4,
-  request_mem = "4 GB")
+  batch_name = "dada2_merge_pairs",
+  request_cores = 4,
+  request_mem = "4 GB"
+)
 }
 \arguments{
-\item{merge_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
+\item{merge_queue_file}{name of the file with the queue, it has 3 columns
+sample_name | R1.fastq | R2.fastq}
 
 \item{merge_param_file}{name of the file with the merge pairs parameters}
 

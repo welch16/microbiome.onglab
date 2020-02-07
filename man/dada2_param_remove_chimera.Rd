@@ -7,7 +7,8 @@
 dada2_param_remove_chimera(paramfile)
 }
 \arguments{
-\item{paramfile}{name of the output json file with the remove chimera parameters}
+\item{paramfile}{name of the output json file with the
+remove chimera parameters}
 }
 \description{
 creates a default param file for the remove chimera process

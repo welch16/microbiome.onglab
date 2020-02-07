@@ -4,15 +4,23 @@
 \alias{condor_label_taxa}
 \title{generate the input file to label taxa with condor}
 \usage{
-condor_label_taxa(asv_file = "", taxa_model_file = "",
-  taxa_prefix = "taxa", taxa_outdir = ".",
-  condor_file = "condor_label_taxa", batch_name = "dada2_label_taxa",
-  confidence_thr = 60, request_cores = 4, request_mem = "4 GB")
+condor_label_taxa(
+  asv_file = "",
+  taxa_model_file = "",
+  taxa_prefix = "taxa",
+  taxa_outdir = ".",
+  condor_file = "condor_label_taxa",
+  batch_name = "dada2_label_taxa",
+  confidence_thr = 60,
+  request_cores = 4,
+  request_mem = "4 GB"
+)
 }
 \arguments{
 \item{asv_file}{rds file with the ASV table without chimeras}
 
-\item{taxa_model_file}{RData file with ta learned taxa model to use with \code{DECIPHER}}
+\item{taxa_model_file}{RData file with ta learned taxa model to use
+with \code{DECIPHER}}
 
 \item{taxa_prefix}{name of the output file}
 
@@ -22,7 +30,8 @@ condor_label_taxa(asv_file = "", taxa_model_file = "",
 
 \item{batch_name}{string with the name of the batch}
 
-\item{confidence_thr}{confidence threshold, higher levels indicates higher accuracy}
+\item{confidence_thr}{confidence threshold, higher levels
+indicates higher accuracy}
 
 \item{request_cores}{number of cpus per machine}
 

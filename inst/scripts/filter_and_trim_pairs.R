@@ -1,5 +1,3 @@
-#!/usr/bin/env Rscript
-
 ##  dada2::filterAndTrim wrap for condor based pipeline
 ##
 ##  Assumes that we have paired end files,

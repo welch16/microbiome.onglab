@@ -7,7 +7,8 @@
 dada2_param_learn_error_rates(paramfile)
 }
 \arguments{
-\item{paramfile}{name of the output json file with the learn error rates parameters}
+\item{paramfile}{name of the output json file
+with the learn error rates parameters}
 }
 \description{
 creates a default param file for the learn error rates parameter

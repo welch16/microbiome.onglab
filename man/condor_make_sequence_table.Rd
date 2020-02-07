@@ -4,14 +4,19 @@
 \alias{condor_make_sequence_table}
 \title{generate the input to make the sequence table files with condor}
 \usage{
-condor_make_sequence_table(make_queue_file = "",
-  make_prefix = "seqtab", make_outdir = ".",
+condor_make_sequence_table(
+  make_queue_file = "",
+  make_prefix = "seqtab",
+  make_outdir = ".",
   condor_file = "./condor_make_seqtab",
-  batch_name = "dada2_make_seqtab", request_cores = 4,
-  request_mem = "4 GB")
+  batch_name = "dada2_make_seqtab",
+  request_cores = 4,
+  request_mem = "4 GB"
+)
 }
 \arguments{
-\item{make_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
+\item{make_queue_file}{name of the file with the queue,
+it has 3 columns sample_name | R1.fastq | R2.fastq}
 
 \item{make_prefix}{prefix name for the sequence table output file}
 

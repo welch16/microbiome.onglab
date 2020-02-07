@@ -7,7 +7,8 @@
 sourcetracker_parameters(paramfile)
 }
 \arguments{
-\item{paramfile}{name of the output json file with the sourcetracker parameters}
+\item{paramfile}{name of the output json file with the
+sourcetracker parameters}
 }
 \description{
 creates a default param file for the source tracker check

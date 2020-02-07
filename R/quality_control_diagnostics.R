@@ -1,134 +1,134 @@
-##' @import furrr
-##' @import future
-##' @import ggplot2
-##' @importFrom tidyr unnest
-##' @importFrom tidyr gather
-##' @importFrom forcats fct_relevel
-##' @importFrom stats median
+#' @import future
+#' @import ggplot2
+#' @import furrr
+#' @import tidyselect
+#' @importFrom tidyr unnest
+#' @importFrom tidyr gather
+#' @importFrom forcats fct_relevel
+#' @importFrom stats median
 NULL
 
-##' summarizes the number of reads resulted after each step into one table
-##'
-##' @param reads_file, a 3 column csv file with columns: sample | R1.fastq | R2.fastq
-##' @param outprefix prefix used in the final ASV table
-##' @param outdir names of the output directory where the results are saved
-##' @param cores number of cpus used to run the process
-##' @return the summary
-##' @export
-summarize_number_reads <- function(reads_file,outprefix,outdir,cores)
-{
-    `.` <- R1 <- R2 <- NULL
-  name <- fold_change <- reads.out <- reads.in <- reads.merged_pairs <- NULL
-  reads.asv_table <- NULL
-  
-  future::plan(future::multiprocess,workers = cores)
-  
-  stopifnot(
-    file.exists(reads_file),
-    dir.exists(outdir))
-  
+#' summarizes the number of reads resulted after each step into one table
+#'
+#' @param reads_file, a 3 column csv file with columns:
+#'   sample | R1.fastq | R2.fastq
+#' @param outprefix prefix used in the final ASV table
+#' @param outdir names of the output directory where the results are saved
+#' @param cores number of cpus used to run the process
+#' @export
+summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
+  `.` <- end1 <- end2 <- NULL
+  name <- fold_change <- NULL
+
+  future::plan(future::multiprocess, workers = cores)
+
+  stopifnot(file.exists(reads_file), dir.exists(outdir))
   ### read input file, i.e. the 3 column file
-  input_files = read_csv(reads_file,col_names = FALSE) %>% set_names(c("name","R1","R2"))
-  
+  input_files <- read_csv(reads_file, col_names = FALSE) %>%
+    set_names(c("name", "end1", "end2"))
+
   input_files %<>%
-    mutate(
-      summ = file.path(outdir,"filter_fastq_summary",paste0(name,"_trim_summary.rds")) %>%
+    dplyr::mutate(
+      summ = file.path(outdir, "filter_fastq_summary",
+        stringr::str_c(name, "_trim_summary.rds")) %>%
         furrr::future_map(readRDS)) %>%
     tidyr::unnest() %>%
-    select(-fold_change)
-  
-  # For which do we have merged pair summary files? Set reads.merged_pairs to NA if missing.
-  input_files %<>% select(-R1,-R2) %>%
+    dplyr::select(-fold_change)
+
+  input_files %<>% select(-R1, -R2) %>%
     mutate(
-      reads.merged_pairs = file.path(outdir,"merged_pairs",
-                                     paste0(name,"_merged_pairs.rds")))
-  nomerged <- input_files %>%
-    filter(!file.exists(reads.merged_pairs)) %>%
-    mutate(reads.merged_pairs=NA)
-  yesmerged <- input_files %>% 
-    filter(file.exists(reads.merged_pairs)) %>%
-    mutate(reads.merged_pairs=reads.merged_pairs %>% furrr::future_map(readRDS) %>% furrr::future_map_dbl( ~ sum(.$abundance)))
-  input_files <- bind_rows(nomerged, yesmerged) %>% arrange(name)
-  
-  
-  asv_table <- readRDS(file.path(outdir,"ASV_tables",paste0(outprefix,"_sequence_table.rds")))
-  
-  asv_table %<>%
-  {
-    rs = rowSums(.)
-    tibble(
+      reads.merged_pairs = file.path(outdir, "merged_pairs",
+                                   paste0(name, "_merged_pairs.rds")) %>%
+        furrr::future_map(readRDS) %>%
+        furrr::future_map_dbl(~ sum(.$abundance)))
+
+  asv_table <- readRDS(
+    file.path(outdir, "ASV_tables",
+      stringr::str_c(outprefix, "_sequence_table.rds")))
+
+  asv_table %<>% {
+    rs <- rowSums(.)
+    tibble::tibble(
       name = names(rs),
-      reads.asv_table = rs)}
-  
-  #input_files %<>% inner_join(asv_table,by = "name")
-  # left join will maintain lost samples, inner join will not
-  input_files %<>% left_join(asv_table,by = "name")
-  input_files %<>%
-    mutate(reads.asv_table=ifelse(reads.merged_pairs==0, 0, reads.asv_table)) %>%
+      reads.asv_table = rs)
+  }
+
+  input_files %<>% inner_join(asv_table, by = "name")
+  input_files %>%
     mutate(
       perc.out = reads.out / reads.in,
       perc.merged_pairs = reads.merged_pairs / reads.in,
-      perc.asv_table = reads.asv_table / reads.in  )
+      perc.asv_table = reads.asv_table / reads.in)
 
   return(input_files)
 }
 
 
-##' compares the (relative) abundance for each step
-##' @param nreads_summary output of the \code{summarize_number_reads} function
-##' @param summary_fun function used to summarize the trend, the default function is the \code{median}
-##' @param relative boolean indicator determining wheter comparing the relative abundance
-##' @return a \code{ggplot} object
-##' @export
-plot_abundance_per_step <- function(nreads_summary, summary_fun = median, relative = FALSE)
-{
+#' compares the (relative) abundance for each step
+#' @param nreads_summary output of the \code{summarize_number_reads} function
+#' @param summary_fun function used to summarize the trend,
+#'  the default function is the \code{median}
+#' @param relative boolean indicator determining wheter comparing the
+#'  relative abundance
+#' @return a \code{ggplot} object
+#' @export
+plot_abundance_per_step <- function(
+  nreads_summary,
+  summary_fun = median,
+  relative = FALSE) {
   name <- step <- sample <- NULL
-  if(relative){
-    nreads_summary <- select(nreads_summary,name,sample,contains("perc"))
-    nreads_summary <- mutate(nreads_summary,perc.in = 1)
-  } else{
-    nreads_summary <- select(nreads_summary,name,sample,contains("reads"))
+
+  if (relative) {
+
+    nreads_summary <- dplyr::select(nreads_summary,
+      name, sample, tidyselect::contains("perc"))
+    nreads_summary <- dplyr::mutate(nreads_summary, perc.in = 1)
+
+  }else{
+    nreads_summary <- dplyr::select(nreads_summary,
+      name, sample, tidyselect::contains("reads"))
   }
 
-  nreads_summary <- tidyr::gather(nreads_summary,step,value,-name,-sample)
+  nreads_summary <- tidyr::gather(nreads_summary,
+    step, value, -name, -sample)
   nreads_summary <- mutate(nreads_summary,
-      step = stringr::str_remove(step,"reads."),
-      step = stringr::str_remove(step,"perc."),
-      step = factor(step) %>% fct_relevel("in","out","merged_pairs"))
+      step = stringr::str_remove(step, "reads."),
+      step = stringr::str_remove(step, "perc."),
+      step = factor(step) %>% fct_relevel("in", "out", "merged_pairs"))
 
-  fun_summary <- group_by(nreads_summary,step)
-  fun_summary <- summarize(fun_summary, value = summary_fun(value))
+  fun_summary <- dplyr::group_by(nreads_summary, step)
+  fun_summary <- dplyr::summarize(fun_summary, value = summary_fun(value))
 
   base_plot <- nreads_summary %>%
-    ggplot(aes(step,value))+
-    geom_boxplot()+
-    geom_point(alpha = 1/4,shape = 21)+
-    geom_line(aes(group = name),alpha = 1/4)+
-    geom_line(data = fun_summary,size = 1.5,aes(group = 1), linetype = 2,
-              colour = "red")+
-    theme(
+    ggplot2::ggplot(aes(step, value)) +
+    ggplot2::geom_boxplot() +
+    ggplot2::geom_point(alpha = 0.25, shape = 21) +
+    ggplot2::geom_line(aes(group = name), alpha = 0.25) +
+    ggplot2::geom_line(data = fun_summary, size = 1.5,
+      ggplot2::aes(group = 1), linetype = 2, colour = "red") +
+    ggplot2::theme(
       legend.position = "none",
-      strip.text.y = element_text(angle = -90, size =10),
-      strip.background = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.major.x = element_blank()
-    )+
-    labs(
-      x = "processing step",
-      y = str_c(if_else(relative,"relative",""), "abundance after step",sep =" "))
+      strip.text.y = ggplot2::element_text(angle = -90, size = 10),
+      strip.background = ggplot2::element_blank(),
+      panel.grid.minor.x = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_blank()) +
+    ggplot2::labs(
+      x = "pstringr::rocess
+        ing step",
+      y = stringr::str_c(
+        dplyr::if_else(relative, "relative", ""),
+          "abundance after step", sep = " "))
 
-  if(relative){
+  if (relative) {
     base_plot +
-      scale_y_continuous(labels = scales::percent_format())
+      ggplot2::scale_y_continuous(labels = scales::percent_format())
   }else{
     base_plot +
-      scale_y_continuous(labels = scales::comma_format(scale = 1e-3,suffix = "K"))
+      ggplot2::scale_y_continuous(
+        labels = scales::comma_format(scale = 1e-3, suffix = "K"))
   }
 
 
 
 
 }
-
-
-

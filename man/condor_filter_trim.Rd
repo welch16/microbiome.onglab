@@ -5,13 +5,19 @@
 \title{generate the input to filter and trim the fastq files
 with condor}
 \usage{
-condor_filter_trim(trim_queue_file = "", trim_param_file = "",
-  trim_outdir = ".", condor_file = "./condor_filter_trim",
-  batch_name = "dada2_trim_sequences", request_cores = 4,
-  request_mem = "4 GB")
+condor_filter_trim(
+  trim_queue_file = "",
+  trim_param_file = "",
+  trim_outdir = ".",
+  condor_file = "./condor_filter_trim",
+  batch_name = "dada2_trim_sequences",
+  request_cores = 4,
+  request_mem = "4 GB"
+)
 }
 \arguments{
-\item{trim_queue_file}{name of the file with the queue, it has 3 columns sample_name | R1.fastq | R2.fastq}
+\item{trim_queue_file}{name of the file with the queue,
+it has 3 columns sample_name | R1.fastq | R2.fastq}
 
 \item{trim_param_file}{name of the file with the filter and trim parameters}
 

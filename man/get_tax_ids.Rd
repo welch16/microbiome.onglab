@@ -11,7 +11,8 @@ get_tax_ids(dna, rdata_file, confidence_thr = 60, cores = NULL)
 
 \item{rdata_file}{idtaxa model learned saved as a RData file}
 
-\item{confidence_thr}{confidence threshold, higher levels indicates higher accuracy}
+\item{confidence_thr}{confidence threshold, higher levels
+indicates higher accuracy}
 
 \item{cores}{number of cpus to use}
 }
