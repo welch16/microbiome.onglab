@@ -80,8 +80,8 @@ if(!file.exists(out_file)){
     multithread = TRUE)
 
   saveRDS(asv_table,out_file)
-
-
+} else {
+  message("Output file ", out_file, " already exists. If you want to rerun this script, delete that file first.")
 }
 
 
