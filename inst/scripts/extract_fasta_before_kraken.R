@@ -1,7 +1,8 @@
 #!/usr/bin/env Rscript
 
 #' Extract fasta file from an ASV table file (post chimera removal). 
-#' We need to provide kraken2 the sequences in fasta format.
+#' (We need to provide kraken2 the sequences in fasta format.)
+#' Puts the resulting *fna file in {outdir}/fasta/
 
 library(magrittr)
 library(tidyverse)
