@@ -1,17 +1,17 @@
 #!/usr/bin/env Rscript
 
-## dada2::makeSequenceTable wrap
-##
-## This script is a bit more elaborated, because instead of wrapping only one
-## dada2 method, this wraps the following:
-##
-## * dada2::derepFastq
-## * dada2::dada
-## * dada2::mergePairs
-##
-## The first two methods barely require a parameter, while the third one
-## requires a whole set of parameters that tune the behaviour of the matches reads
-
+# dada2::makeSequenceTable wrap
+#
+# This script is a bit more elaborated, because instead of wrapping only one
+# dada2 method, this wraps the following:
+#
+# * dada2::derepFastq
+# * dada2::dada
+# * dada2::mergePairs
+#
+# The first two methods barely require a parameter, while the third one
+# requires a whole set of parameters that tune the behaviour of the 
+# matched reads
 
 info=Sys.info();
 message(paste0(names(info)," : ",info,"\n"))
@@ -49,22 +49,24 @@ library(microbiome.onglab)
 all_files <- read_csv(opt$queue_file, col_names = FALSE)
 
 all_files %<>%
-  rename( sample_name = X1) %>%
-  mutate(
-    out_file = file.path(opt$outdir,"merged_pairs",paste0(sample_name,"_merged_pairs.rds"))
+  dplyr::rename(sample_name = X1) %>%
+  dplyr::mutate(
+    out_file = file.path(opt$outdir,
+      "merged_pairs", stringr::str_c(sample_name, "_merged_pairs.rds"))
   ) %>%
-  select(-X2,-X3)
+  dplyr::select(-X2, -X3)
 
 # We will remove rows where file does not exist
-all_files %<>% 
-  mutate(has_pairs=file.exists(out_file))
+all_files %<>%
+  dplyr::mutate(has_pairs = file.exists(out_file))
 
 # report which samples we're dropping
-all_files %>% 
+all_files %>%
     filter(!has_pairs) %>%
     select(sample_name, out_file) %>%
     deframe() %>%
-    walk2(names(.), .f=~message("Dropping sample ", .y, ". No merged pairs file ", .x))
+    walk2(names(.), .f = ~ message("Dropping sample ", .y,
+      ". No merged pairs file ", .x))
 
 all_files %<>%
   filter(has_pairs) %>%
@@ -77,9 +79,9 @@ sequence_table <- pull(all_files,merged_pairs)
 sequence_table <- makeSequenceTable(sequence_table)
 rownames(sequence_table) <- pull(all_files,sample_name)
 
-out_file <- file.path(opt$outdir,"ASV_tables",paste0(opt$outprefix, "_sequence_table.rds"))
+out_file <- file.path(opt$outdir, "ASV_tables",
+  stringr::str_c(opt$outprefix, "_sequence_table.rds"))
 
 
 saveRDS(sequence_table, out_file)
-
 message("Done! sequence table saved at ", out_file)
