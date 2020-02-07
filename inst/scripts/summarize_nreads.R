@@ -22,11 +22,11 @@ optList <-  list(
 
 opt <- parse_args(OptionParser(option_list = optList))
 
-opt=list()
-opt$queue_file="run/sample_table.csv"
-opt$prefix="stool_vg_2018"
-opt$outdir="./run"
-opt$cores=4
+#opt=list()
+#opt$queue_file="run/sample_table.csv"
+#opt$prefix="stool_vg_2018"
+#opt$outdir="./run"
+#opt$cores=4
 
 out_file = file.path(opt$outdir,"summary",paste0(opt$prefix,"_nreads.rds"))
 
