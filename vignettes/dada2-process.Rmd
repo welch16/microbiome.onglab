@@ -39,7 +39,7 @@ Generally speaking, there are many script to run. The main focus of this wrapper
 
 ```{r pack}
 
-system.file("scripts",package = "microbiome.onglab")
+system.file("scripts", package = "microbiome.onglab")
 list.files(system.file("scripts", package = "microbiome.onglab"))
 
 ```
@@ -75,7 +75,7 @@ The file looks as follows, and in this case at least the `queue_file`, `param_fi
 
 ```{r condor_file_show, echo = FALSE,warning=FALSE}
 
-cat(readLines(condor_file),sep = "\n")
+cat(readLines(condor_file), sep = "\n")
 
 ```
 
@@ -85,15 +85,17 @@ We define the temp directory:
 
 ```{r run_all, warning=FALSE}
 
-my_dir = file.path(tempdir(),"example")
+my_dir = file.path(tempdir(), "example")
 my_dir
 
 create_file_structure(my_dir)
 
-dir.create(file.path(my_dir,"dada2_params"))
-dada2_param_copy_all(outdir =  file.path(my_dir,"dada2_params"), prefix = "example")
-dir.create(file.path(my_dir,"condor"))
-condor_generate_all(condordir = file.path(my_dir,"condor"),prefix = "example")
+dir.create(file.path(my_dir, "dada2_params"))
+dada2_param_copy_all(outdir =  file.path(my_dir, "dada2_params"),
+  prefix = "example")
+dir.create(file.path(my_dir, "condor"))
+condor_generate_all(condordir = file.path(my_dir, "condor"),
+  prefix = "example")
 
 ```
 
@@ -101,7 +103,7 @@ After doing these steps, the project directory will have the following structure
 
 ```{r}
 
-list.files(my_dir,recursive = TRUE,include.dirs = TRUE)
+list.files(my_dir, recursive = TRUE, include.dirs = TRUE)
 
 ```
 

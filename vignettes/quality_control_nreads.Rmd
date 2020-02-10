@@ -58,7 +58,7 @@ Which will return a `tibble` that looks as follows:
 
 ```{r }
 
-nreads_summary %>% select(-name,-sample)
+nreads_summary %>% select(-name, -sample)
 
 ```
 

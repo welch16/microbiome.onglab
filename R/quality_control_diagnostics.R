@@ -11,6 +11,7 @@
 #' @importFrom tidyr gather
 #' @importFrom forcats fct_relevel
 #' @importFrom stats median
+#' @importFrom grDevices dev.off
 NULL
 
 #' summarizes the number of reads resulted after each step into one table
@@ -159,14 +160,14 @@ plot_quality_profiles <- function(sample_tibble, pdf_filename) {
 
   sample_tibble %<>%
     dplyr::mutate(
-      end1_plot = map(end1, profile_plot),
-      end2_plot = map(end2, profile_plot))
+      end1_plot = purrr::map(end1, profile_plot),
+      end2_plot = purrr::map(end2, profile_plot))
 
   plot_all <- function(end1, end2, filename) {
     grDevices::pdf(file = filename, width = 9, height = 4)
     u <- purrr::map2(end1, end2, cowplot::plot_grid, nrow = 1)
     u <- purrr::map(u, print)
-    dev.off()
+    grDevices::dev.off()
   }
 
   plot_all(sample_tibble$end1_plot, sample_tibble$end2_plot,

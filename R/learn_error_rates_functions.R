@@ -62,7 +62,7 @@ condor_error_rates <- function(
       stringr::str_c("batch_name       = ", batch_name),
       stringr::str_c("executable       = ", rscript),
       stringr::str_c("args             = $(script_r) --rate_files $(rate_file)",
-        "--param_file $(param_file) --outprefix $(outprefix)",
+        "--R1_end $(end) --param_file $(param_file) --outprefix $(outprefix)",
         "--outdir $(outdir) --cores", request_cores, sep = " "),
       stringr::str_c("request_cpus     = ", request_cores),
       stringr::str_c("request_memory   = ", request_mem),
@@ -82,9 +82,11 @@ condor_error_rates <- function(
         "dada2_error_rates_$(outprefix).$(cluster).$(process).log"),
       stringr::str_c("rate_file        = ", error_queue_files[1]),
       stringr::str_c("outprefix        = ", error_prefixes[1]),
+      stringr::str_c("end              = ", "TRUE"),
       "queue 1",
       stringr::str_c("rate_file        = ", error_queue_files[2]),
       stringr::str_c("outprefix        = ", error_prefixes[2]),
+      stringr::str_c("end              = ", "FALSE"),
       "queue 1"), file_connection)
 
   close(file_connection)
