@@ -68,7 +68,7 @@ library(jsonlite)
 if (!file.exists(opt$param_file)) {
   params <- data.frame()
 }else{
-  params <- fromJSON(opt$param_file, flatten = TRUE)
+  params <- jsonlite::fromJSON(opt$param_file, flatten = TRUE)
 }
 
 dada2_params <- c("nbases")
@@ -79,25 +79,26 @@ message("Learning error rates")
 message("Input files in: ", opt$rate_files)
 message("Output file: ", out_file)
 
-filtered_fastq <- read_tsv(opt$rate_files, col_names = FALSE)
+filtered_fastq <- readr::read_csv(opt$rate_files, col_names = FALSE)
 
-end_select <- if_else(opt$R1_end, 2, 3)
-filtered_fastq %<>% pluck(names(filtered_fastq)[end_select])
+end_select <- dplyr::if_else(opt$R1_end, 2, 3)
+filtered_fastq %<>% dplyr::pluck(names(filtered_fastq)[end_select])
 
-filtered_fastq %<>% parse_filtered_file(file.path(opt$outdir, "filter_fastq"))
+filtered_fastq %<>% microbiome.onglab::parse_filtered_file(
+  file.path(opt$outdir, "filter_fastq"))
 
 filtered_fastq <- filtered_fastq[file.exists(filtered_fastq)]
 
 if (!file.exists(out_file)) {
 
-  error_rates <- learnErrors(
+  error_rates <- dada2::learnErrors(
     filtered_fastq,
-    nbases = get_param_error_rates("nbases", params),
+    nbases = microbiome.onglab::get_param_error_rates("nbases", params),
     multithread = TRUE)
   saveRDS(error_rates, file = out_file)
 
-  error_plot <- plotErrors(error_rates, nominalQ = TRUE)
-  ggsave(
+  error_plot <- dada2::plotErrors(error_rates, nominalQ = TRUE)
+  ggplot2::ggsave(
     filename = plot_file,
     plot = error_plot,
     width = 20,
