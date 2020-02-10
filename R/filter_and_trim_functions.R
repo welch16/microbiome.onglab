@@ -78,11 +78,11 @@ condor_filter_trim <- function(
       stringr::str_c("param_file       = ", trim_param_file),
       stringr::str_c("outdir           = ", trim_outdir),
       stringr::str_c("output           = $(outdir)/out/dada2_filter_trim_",
-        "$(sample_name).$(cluster).$(process).out"),
+        "$(cluster).$(process)_$(sample_name).out"),
       stringr::str_c("error            = $(outdir)/err/dada2_filter_trim_",
-        "$(sample_name).$(cluster).$(process).err"),
+        "$(cluster).$(process)_$(sample_name).err"),
       stringr::str_c("log              = $(outdir)/log/dada2_filter_trim_",
-        "$(sample_name).$(cluster).$(process).log"),
+        "$(cluster).$(process)_$(sample_name).log"),
       "queue sample, fastq1, fastq2 from $(queue_file)"), file_connection)
 
   close(file_connection)

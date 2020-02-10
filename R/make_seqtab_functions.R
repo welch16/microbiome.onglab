@@ -137,14 +137,14 @@ condor_remove_chimeras <- function(
       stringr::str_c("outdir           = ", chim_outdir),
       stringr::str_c("outprefix        = ", chim_prefix),
       stringr::str_c("output           = ",
-        "$(outdir)/out/dada2_remove_chimera_$(outprefix)",
-        ".$(cluster).$(process).out"),
+        "$(outdir)/out/dada2_remove_chimera_$(cluster).$(process)_$(outprefix)",
+        ".out"),
       stringr::str_c("error            = ",
-        "$(outdir)/err/dada2_remove_chimera_$(outprefix)",
-        ".$(cluster).$(process).err"),
+        "$(outdir)/err/dada2_remove_chimera_$(cluster).$(process)_$(outprefix)",
+        ".err"),
       stringr::str_c("log              = ",
-        "$(outdir)/log/dada2_remove_chimera_$(outprefix)",
-        ".$(cluster).$(process).log"),
+        "$(outdir)/log/dada2_remove_chimera_$(cluster).$(process)_$(outprefix)",
+        ".log"),
       "queue 1"), file_connection)
 
   close(file_connection)
