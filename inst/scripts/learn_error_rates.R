@@ -82,7 +82,7 @@ message("Output file: ", out_file)
 filtered_fastq <- readr::read_csv(opt$rate_files, col_names = FALSE)
 
 end_select <- dplyr::if_else(opt$R1_end, 2, 3)
-filtered_fastq %<>% dplyr::pluck(names(filtered_fastq)[end_select])
+filtered_fastq %<>% purrr::pluck(names(filtered_fastq)[end_select])
 
 filtered_fastq %<>% microbiome.onglab::parse_filtered_file(
   file.path(opt$outdir, "filter_fastq"))
