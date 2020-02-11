@@ -15,7 +15,6 @@
 info <- Sys.info();
 message(stringr::str_c(names(info), " : ", info, "\n"))
 
-
 library(optparse)
 
 opt_list <- list(
@@ -46,12 +45,10 @@ opt_list <- list(
     help = "Number of parallel cpus to use")
 )
 
-
 opt <- optparse::parse_args(
   optparse::OptionParser(option_list = opt_list))
 
 options(mc.cores = opt$cores)
-
 stopifnot(file.exists(opt$rate_files))
 
 out_file <- file.path(opt$outdir, "error_rates",
@@ -74,23 +71,23 @@ if (!file.exists(opt$param_file)) {
 dada2_params <- c("nbases")
 
 stopifnot(all(names(params) %in% dada2_params))
-
 message("Learning error rates")
 message("Input files in: ", opt$rate_files)
 message("Output file: ", out_file)
 
 filtered_fastq <- readr::read_csv(opt$rate_files, col_names = FALSE)
 
+# selects column based on the R1_end parameter
 end_select <- dplyr::if_else(opt$R1_end, 2, 3)
 filtered_fastq %<>% purrr::pluck(names(filtered_fastq)[end_select])
-
 filtered_fastq %<>% microbiome.onglab::parse_filtered_file(
   file.path(opt$outdir, "filter_fastq"))
-
+# removes non-existant files from the table
 filtered_fastq <- filtered_fastq[file.exists(filtered_fastq)]
 
 if (!file.exists(out_file)) {
 
+  # learn error rates
   error_rates <- dada2::learnErrors(
     filtered_fastq,
     nbases = microbiome.onglab::get_param_error_rates("nbases", params),

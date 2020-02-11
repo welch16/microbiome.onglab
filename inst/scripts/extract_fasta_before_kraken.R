@@ -1,36 +1,34 @@
 #!/usr/bin/env Rscript
 
-#' Extract fasta file from an ASV table file (post chimera removal). 
+#' Extract fasta file from an ASV table file (post chimera removal).
 #' (We need to provide kraken2 the sequences in fasta format.)
 #' Puts the resulting *fna file in {outdir}/fasta/
 
 library(optparse)
 
 info <- Sys.info();
-message(paste0(names(info)," : ",info,"\n"))
+message(stringr::str_c(names(info), " : ", info, "\n"))
 
 opt_list <- list(
-  make_option("--asv_file", action = "store_true", type = "character",
-              help = "Name of input ASV sequence table (after chimera filter)."),
-  make_option("--outdir", action = "store_true", type = "character",
-              help = "Location of the output directory (top level)"),
-  make_option("--prefix", action = "store_true", type = "character",
-              help = "Prefix for output filename (will be {outdir}/fasta/{prefix}.fna")
+  optparse::make_option("--asv_file", action = "store_true", type = "character",
+    help = "Name of input ASV sequence table (after chimera filter)."),
+  optparse::make_option("--outdir", action = "store_true", type = "character",
+    help = "Location of the output directory (top level)"),
+  optparse::make_option("--prefix", action = "store_true", type = "character",
+    help = "Prefix for output filename (will be {outdir}/fasta/{prefix}.fna")
 )
-opt <- parse_args(OptionParser(option_list = opt_list))
+opt <- optparse::parse_args(optparse::OptionParser(option_list = opt_list))
 
 ### get asv tables after removing chimeras
-
 library(magrittr)
 library(tidyverse)
 library(seqinr)
-
 
 base_dr <- opt$outdir
 my_prefix <- opt$prefix
 asv_file <- opt$asv_file
 
-# check file, directory existence 
+# check file, directory existence
 fasta_dir <- file.path(base_dr, "fasta")
 out_file <- file.path(fasta_dir, sprintf("%s.fna", my_prefix))
 

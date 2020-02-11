@@ -1,6 +1,86 @@
 #' @importFrom RCurl getURL
+#' @importFrom abind abind
 NULL
 
+#' loads sourcetracker code from the raw github repository
+#' @export
+load_sourcetracker <- function() {
+
+  sourcetracker_url <- stringr::str_c("https://raw.githubusercontent.com/",
+    "danknights/sourcetracker/master/src/SourceTracker.r")
+  script <- RCurl::getURL(sourcetracker_url)
+  eval(parse(text = script))
+}
+
+#' gets the ASV matrix for some samples
+#' @param asv the full asv matrix
+#' @param samples a vector of samples to select
+#' @export
+aux_get_matrix <- function(asv, samples) {
+  mat <- asv[samples, ]
+  if (length(samples) == 1) {
+    mat <- matrix(mat, nrow = 1)
+  }
+  mat
+}
+
+#' splits the ASV matrix according to the negative control structure
+#' @param group negative control structure indicating the samples for each
+#'  group
+#' @param asv ASV matrix, nsamples x nASVs
+#' @param split_size maximum split size when partitioning the matrix
+#' @export
+aux_split_run <- function(group, asv, split_size) {
+
+  samples <- dplyr::pull(group, sample)
+  sample_table <- aux_get_matrix(asv, samples)
+
+  if (nrow(sample_table) > split_size) {
+
+    splits <- seq_len(ceiling(nrow(sample_table) / split_size))
+    splits <- rep(splits, each = split_size)
+    splits <- splits[seq_len(nrow(sample_table))]
+    split_samples <- split(samples, splits)
+    split_samples <- purrr::map(split_samples, ~ sample_table[., ])
+  }else{
+    split_samples <- list(sample_table)
+  }
+
+  split_samples
+}
+
+#' merge sourcetracker results into a big sourcetracker object
+#' @param split_results a list of sourcetracker objects
+#' @return a sourcetracker object
+#' @export
+merge_sourcetracker_results <- function(split_results) {
+
+  draws <- purrr::map(split_results, "draws")
+  draws <- do.call(abind::abind, draws, 3)
+
+  proportions <- purrr::map(split_results, "proportions")
+  proportions <- do.call(rbind, proportions)
+
+  proportions_sd <- purrr::map(split_results, "proportions_sd")
+  proportions_sd <- do.call(rbind, proportions_sd)
+
+  train_envs <- purrr::map(split_results, "train.envs")
+  train_envs <- train.envs[[1]]
+
+  samplenames <- purrr::map(split_results, "samplenames")
+  samplenames <- do.call(c, samplenames)
+
+  out <- list(
+    "draws" = draws,
+    "proportions" = proportions,
+    "proportions_sd" = proportions_sd,
+    "train.envs" = train_envs,
+    "samplenames" = samplenames)
+
+  class(out) <- "sourcetracker.fit"
+
+  invisible(out)
+}
 
 #' function to add default parameters for learn error rates script
 #'

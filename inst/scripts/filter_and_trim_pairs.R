@@ -57,7 +57,7 @@ library(microbiome.onglab)
 library(dada2)
 library(jsonlite)
 
-
+## builds data.frame with parameters from json file
 if (!file.exists(opt$param_file)) {
   params <- data.frame()
 }else{
@@ -69,6 +69,7 @@ dada2_params <- c("truncQ", "truncLen", "trimLeft", "trimRight", "maxLen",
 
 stopifnot(all(names(params) %in% dada2_params))
 
+## parses filtered file names
 fastq1_filtered <- microbiome.onglab::parse_filtered_file(
   opt$fastq1, file.path(opt$outdir, "filter_fastq"))
 fastq2_filtered <- microbiome.onglab::parse_filtered_file(
@@ -102,6 +103,7 @@ if (!file.exists(out_file)) {
     compress = TRUE,
     multithread = TRUE)
 
+  # creates summary, changes the name to avoid warning in downstream functions
   summary_out <- tibble::as_tibble(out, rownames = "sample") %>%
     dplyr::rename(
       reads_in = reads.in,

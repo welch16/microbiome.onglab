@@ -1,39 +1,35 @@
-#!/usr/bin/env Rscript
+## merges different ASV tables, and removes chimeras
 
+info <- Sys.info();
+message(stringr::str_c(names(info), " : ", info, "\n"))
 
-info=Sys.info();
-message(paste0(names(info)," : ",info,"\n"))
+library(optparse, quietly = TRUE)
 
-library(optparse,quietly = TRUE)
+opt_list <-  list(
+  optparse::make_option("--dada_file", action = "store_true",
+    type = "character",
+    help = "A file with the name of all the dada2 tables to merge"),
+  optparse::make_option("--param_file", action = "store_true",
+    type = "character",
+    help = "json file with the parameters used to remove bimeras"),
+  optparse::make_option("--outprefix", action = "store_true",
+    type = "character", default = "dada2",
+    help = "Name of the output file with the labelled ASVs after
+      removing the bimeras, the full file name will
+      be {outdir}/ASV_tables/{outprefix}_asv_wo_bimeras.rds"),
+  optparse::make_option("--outdir", action = "store_true", type = "character",
+      default = tempdir(),
+      help = "Location of the output directory"),
+  optparse::make_option("--cores", action = "store_true", type = "numeric",
+      default = 4,
+      help = "Number of parallel cpus to use"))
 
-optList <-  list(
-  make_option("--dada_file", action = "store_true", type = "character",
-              help = "A file with the name of all the dada2 tables to merge"),
-  make_option("--param_file", action = "store_true",type = "character",
-              help = "json file with the parameters used to remove bimeras"),
-  make_option("--outprefix", action = "store_true", type = "character",
-              default = "dada2",
-              help = "Name of the output file with the labelled ASVs after
-                    	removing the bimeras, the full file name will
-        				be {outdir}/ASV_tables/{outprefix}_asv_wo_bimeras.rds"),
-  make_option("--outdir", action = "store_true", type = "character",
-              default = tempdir(),
-              help = "Location of the output directory"),
-  make_option("--cores", action = "store_true", type = "numeric",
-              default = 4,
-              help = "Number of parallel cpus to use"))
-
-opt <- parse_args(OptionParser(option_list = optList))
+opt <- optparse::parse_args(optparse::OptionParser(option_list = opt_list))
 
 options(mc.cores = opt$cores)
 
-out_file = file.path(opt$outdir, "ASV_tables",paste0(opt$outprefix,"_asv_wo_bimeras.rds"))
-
-# opt$dada_file = "./condor_runs/2019_06_25_full_dust_ASV_tables.txt"
-# opt$param_file = "./dada2_pipeline_params/2019_06_21_dada2_bimera_parameters.json"
-# opt$taxa_model = "../idtaxa_trained_models/GTDB_r86-mod_September2018.RData"
-#
-
+out_file <- file.path(opt$outdir, "ASV_tables",
+  stringr::str_c(opt$outprefix, "_asv_wo_bimeras.rds"))
 
 stopifnot(file.exists(opt$dada_file))
 
@@ -43,45 +39,55 @@ library(dada2)
 library(microbiome.onglab)
 library(jsonlite)
 
-if(!file.exists(opt$param_file)){
+if (!file.exists(opt$param_file)) {
   params <- data.frame()
 }else{
-  params <- fromJSON(opt$param_file, flatten = TRUE)
+  params <- jsonlite::fromJSON(opt$param_file, flatten = TRUE)
 }
 
-dada2_params <- c("minSampleFraction","ignoreNNegatives",
-                  "minFoldParentOverAbundance","allowOneOf","minOneOffParentDistance","maxShift")
+dada2_params <- c(
+  "minSampleFraction",
+  "ignoreNNegatives",
+  "minFoldParentOverAbundance",
+  "allowOneOf",
+  "minOneOffParentDistance",
+  "maxShift")
 
-stopifnot( all( names(params) %in% dada2_params))
+stopifnot(all(names(params) %in% dada2_params))
 
 message("Removing bimeras")
 message("Input files in: ", opt$dada_file)
 message("Output file: ", out_file)
 
-if(!file.exists(out_file)){
+if (!file.exists(out_file)) {
 
-  asv_tables <- read_delim(opt$dada_file, " ",col_names = FALSE) %>% pull(X1)
-  asv_tables %<>% map(readRDS)
+  asv_tables <- readr::read_delim(opt$dada_file, " ", col_names = FALSE) %>%
+    dplyr::pull(X1)
+  asv_tables %<>% purrr::map(readRDS)
 
-  if(length(asv_tables) > 1){
-    asv_table <- mergeSequenceTables(tables = asv_tables)
+  if (length(asv_tables) > 1) {
+    asv_table <- dada2::mergeSequenceTables(tables = asv_tables)
   }else{
     asv_table <- asv_tables[[1]]
   }
 
-  asv_table <- removeBimeraDenovo(
+  asv_table <- dada2::removeBimeraDenovo(
     asv_table, method = "consensus",
-    minSampleFraction = get_param_chimeras("minSampleFraction",params),
-    ignoreNNegatives = get_param_chimeras("ignoreNNegatives",params),
-    minFoldParentOverAbundance = get_param_chimeras("minFoldParentOverAbundance",params),
-    allowOneOf = get_param_chimeras("allowOneOf",params),
-    minOneOffParentDistance = get_param_chimeras("minOneOffParentDistance",params),
-    maxShift = get_param_chimeras("maxShift",params),
+    minSampleFraction =
+      microbiome.onglab::get_param_chimeras("minSampleFraction", params),
+    ignoreNNegatives =
+      microbiome.onglab::get_param_chimeras("ignoreNNegatives", params),
+    minFoldParentOverAbundance =
+      microbiome.onglab::get_param_chimeras(
+        "minFoldParentOverAbundance", params),
+    allowOneOf = microbiome.onglab::get_param_chimeras("allowOneOf", params),
+    minOneOffParentDistance = microbiome.onglab::get_param_chimeras(
+      "minOneOffParentDistance", params),
+    maxShift = microbiome.oglab::get_param_chimeras("maxShift", params),
     multithread = TRUE)
 
-  saveRDS(asv_table,out_file)
+  saveRDS(asv_table, out_file)
 } else {
-  message("Output file ", out_file, " already exists. If you want to rerun this script, delete that file first.")
+  message("Output file ", out_file,
+  " already exists. If you want to rerun this script, delete that file first.")
 }
-
-
