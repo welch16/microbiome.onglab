@@ -87,9 +87,6 @@ create_file_structure <- function(outdir, groups) {
   dir.create(outdir, showWarnings = FALSE)
 
   # condor stuff
-  dir.create(file.path(outdir, "err"), showWarnings = FALSE)
-  dir.create(file.path(outdir, "log"), showWarnings = FALSE)
-  dir.create(file.path(outdir, "out"), showWarnings = FALSE)
 
   dir.create(file.path(outdir, "ASVs"))
   dir.create(file.path(outdir, "prevalence"))

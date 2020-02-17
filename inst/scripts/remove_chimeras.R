@@ -28,7 +28,7 @@ opt <- optparse::parse_args(optparse::OptionParser(option_list = opt_list))
 
 options(mc.cores = opt$cores)
 
-out_file <- file.path(opt$outdir, "ASV_tables",
+out_file <- file.path(opt$outdir, "ASVs",
   stringr::str_c(opt$outprefix, "_asv_wo_bimeras.rds"))
 
 stopifnot(file.exists(opt$dada_file))
