@@ -57,7 +57,7 @@ condor_merge_pairs <- function(
 
   rscript <- system("which Rscript", intern = TRUE)
   writeLines(
-    c( "universe         = vanilla",
+    c("universe         = vanilla",
       stringr::str_c("batch_name       = ", batch_name),
       stringr::str_c("executable       = ", rscript),
       stringr::str_c("args             = $(script_r) --sample_name $(sample)",

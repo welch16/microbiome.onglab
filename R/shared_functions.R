@@ -1,6 +1,7 @@
 #' @import magrittr
 #' @import stringr
 #' @import dplyr
+#' @importFrom purrr reduce
 #' @import readr
 #' @import optparse
 #' @import dada2
@@ -29,22 +30,12 @@ parse_filtered_file <- function(fastq, outdir) {
 #'
 #' @param all_samples a \code{tibble} with 3 columns:
 #'    name, end1, end2
-#' @param outfile the file where the full tibble is going to be saved,
-#'   the end1 and end2 files, are going to share almost the same name
-#'   but replacing `.csv` with `_R1.csv` and `_R2.csv`, respectively.
+#' @param outfile the file where the full tibble is going to be saved
 #' @export
 save_files <- function(all_samples, outfile) {
 
-  end1 <- end2 <- NULL
   all_samples %>% readr::write_csv(outfile, col_names = FALSE)
-  all_samples %>%
-    dplyr::select(end1) %>%
-    readr::write_csv(
-      stringr::str_replace(outfile, ".csv", "_R1.csv"), col_names = FALSE)
-  all_samples %>%
-    dplyr::select(end2) %>%
-    readr::write_csv(
-      stringr::str_replace(outfile, ".csv", "_R2.csv"), col_names = FALSE)
+
 }
 
 #' creates a warning if the file doesn't exists
@@ -62,9 +53,9 @@ warning_file <- function(file, warn_text) {
 }
 
 #' creates the file structure for running dada2 with condor
-#' @param outdir Name of the base output directory
+#' @param outdir a string with the name of the base output directoryn
 #' @export
-create_file_structure <- function(outdir) {
+create_file_structure_group <- function(outdir) {
   dir.create(outdir, showWarnings = FALSE)
 
   ### condor stuff
@@ -79,11 +70,36 @@ create_file_structure <- function(outdir) {
   dir.create(file.path(outdir, "merged_pairs"), showWarnings = FALSE)
   dir.create(file.path(outdir, "merged_pairs_summary"), showWarnings = FALSE)
   dir.create(file.path(outdir, "ASV_tables"), showWarnings = FALSE)
-  dir.create(file.path(outdir, "ASV_tables", "idtaxa"), showWarnings = FALSE)
-  dir.create(file.path(outdir, "ASV_tables", "prevalence"),
-    showWarnings = FALSE)
+}
+
+
+#' create the full file structure that integrated across different groups
+#' @param outdir a string with the name of the base output directoryn
+#' @param groups a string vector with the names of samples groups
+#' @export
+#' @examples
+#' \dontrun{
+#'  groups <- c("group1", "group2")
+#'  create_file_structure(outdir, groups)
+#' }
+create_file_structure <- function(outdir, groups) {
+
+  dir.create(outdir, showWarnings = FALSE)
+
+  # condor stuff
+  dir.create(file.path(outdir, "err"), showWarnings = FALSE)
+  dir.create(file.path(outdir, "log"), showWarnings = FALSE)
+  dir.create(file.path(outdir, "out"), showWarnings = FALSE)
+
+  dir.create(file.path(outdir, "ASVs"))
+  dir.create(file.path(outdir, "prevalence"))
+  dir.create(file.path(outdir, "kraken"))
+
+  purrr::map(file.path(outdir, groups), create_file_structure_group)
 
 }
+
+
 
 #' generates all condor files
 #' @param condordir directory where all condor files are going to be saved
@@ -110,12 +126,12 @@ condor_generate_all <- function(condordir, prefix) {
   condor_make_sequence_table(
     condor_file = seque_table_file)
 
-   condor_generate_dag(condordir, basename(aux_prefix),
+   condor_generate_group_dag(condordir, basename(aux_prefix),
     filter_trim_file, error_rates_file,
     merge_pairs_file, seque_table_file)
 
-  condor_remove_chimeras(
-   condor_file = stringr::str_c(prefix, "_remove_chimeras_", my_date))
+  # condor_remove_chimeras(
+  # condor_file = stringr::str_c(prefix, "_remove_chimeras_", my_date))
   # condor_label_taxa(
   #   condor_file = stringr::str_c(prefix, "_label_taxa_", my_date))
 
@@ -130,7 +146,7 @@ condor_generate_all <- function(condordir, prefix) {
 #' @param merge_pairs_file name of the merge pairs condor file
 #' @param seque_table_file name of the make sequence table condor file
 #' @export
-condor_generate_dag <- function(
+condor_generate_group_dag <- function(
   condordir, prefix,
   filter_trim_file,
   error_rates_file,
@@ -144,7 +160,11 @@ condor_generate_dag <- function(
     "dada2.dag", sep = "_"))
   file_connection <- file(condor_file)
 
-  condor_simple_node <- function(parent, child) {
+  condor_node <- function(parent, child) {
+
+    parent <- purrr::reduce(parent, stringr::str_c, sep = " ")
+    child <- purrr::reduce(child, stringr::str_c, sep = " ")
+
     stringr::str_c("PARENT", parent, "CHILD", child, sep = " ")
   }
 
@@ -154,9 +174,9 @@ condor_generate_dag <- function(
       stringr::str_c("JOB", "error_rates", error_rates_file, sep = " "),
       stringr::str_c("JOB", "merge_pairs", merge_pairs_file, sep = " "),
       stringr::str_c("JOB", "seq_tab", seque_table_file, sep = " "),
-      condor_simple_node("filter_trim", "error_rates"),
-      condor_simple_node("error_rates", "merge_pairs"),
-      condor_simple_node("merge_pairs", "seq_tab")), file_connection)
+      condor_node("filter_trim", "error_rates"),
+      condor_node("error_rates", "merge_pairs"),
+      condor_node("merge_pairs", "seq_tab")), file_connection)
 
   close(file_connection)
 }

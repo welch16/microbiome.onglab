@@ -11,9 +11,7 @@ save_files(all_samples, outfile)
 \item{all_samples}{a \code{tibble} with 3 columns:
 name, end1, end2}
 
-\item{outfile}{the file where the full tibble is going to be saved,
-the end1 and end2 files, are going to share almost the same name
-but replacing `.csv` with `_R1.csv` and `_R2.csv`, respectively.}
+\item{outfile}{the file where the full tibble is going to be saved}
 }
 \description{
 write csv files structured to make the dada2 pipeline

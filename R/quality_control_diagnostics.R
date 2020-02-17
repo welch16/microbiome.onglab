@@ -41,8 +41,9 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
     tidyr::unnest() %>%
     dplyr::select(-fold_change)
 
-  input_files %<>% select(-R1, -R2) %>%
-    mutate(
+  input_files %<>% 
+    dplyr::select(-end1, -end2) %>%
+    dplyr::mutate(
       reads.merged_pairs = file.path(outdir, "merged_pairs",
                                    paste0(name, "_merged_pairs.rds")) %>%
         furrr::future_map(readRDS) %>%

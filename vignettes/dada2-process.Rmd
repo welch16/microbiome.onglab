@@ -88,7 +88,7 @@ We define the temp directory:
 my_dir = file.path(tempdir(), "example")
 my_dir
 
-create_file_structure(my_dir)
+create_file_structure_group(my_dir)
 
 dir.create(file.path(my_dir, "dada2_params"))
 dada2_param_copy_all(outdir =  file.path(my_dir, "dada2_params"),

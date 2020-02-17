@@ -2,13 +2,21 @@
 % Please edit documentation in R/shared_functions.R
 \name{create_file_structure}
 \alias{create_file_structure}
-\title{creates the file structure for running dada2 with condor}
+\title{create the full file structure that integrated across different groups}
 \usage{
-create_file_structure(outdir)
+create_file_structure(outdir, groups)
 }
 \arguments{
-\item{outdir}{Name of the base output directory}
+\item{outdir}{a string with the name of the base output directoryn}
+
+\item{groups}{a string vector with the names of samples groups}
 }
 \description{
-creates the file structure for running dada2 with condor
+create the full file structure that integrated across different groups
+}
+\examples{
+\dontrun{
+ groups <- c("group1", "group2")
+ create_file_structure(outdir, groups)
+}
 }
