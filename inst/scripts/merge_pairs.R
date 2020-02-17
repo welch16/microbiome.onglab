@@ -109,7 +109,7 @@ message("Merging paired dada2 output")
 
 
 merged_pairs <- dada2::mergePairs(
-  dada_end1, derep_end1, dada_end2, derep_endR2,
+  dada_end1, derep_end1, dada_end2, derep_end2,
   minOverlap = microbiome.onglab::get_param_merge_pairs("minOverlap", params),
   maxMismatch = microbiome.onglab::get_param_merge_pairs("maxMismatch", params))
 
