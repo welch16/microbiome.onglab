@@ -38,10 +38,10 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
       summ = file.path(outdir, "filter_fastq_summary",
         stringr::str_c(name, "_trim_summary.rds")) %>%
         furrr::future_map(readRDS)) %>%
-    tidyr::unnest() %>%
+    tidyr::unnest(cols = c(summ)) %>%
     dplyr::select(-fold_change)
 
-  input_files %<>% 
+  input_files %<>%
     dplyr::select(-end1, -end2) %>%
     dplyr::mutate(
       reads.merged_pairs = file.path(outdir, "merged_pairs",
@@ -60,14 +60,13 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
       reads.asv_table = rs)
   }
 
-  input_files %<>% inner_join(asv_table, by = "name")
+  input_files %<>% dplyr::inner_join(asv_table, by = "name")
   input_files %>%
-    mutate(
+    dplyr::mutate(
       perc.out = reads.out / reads.in,
       perc.merged_pairs = reads.merged_pairs / reads.in,
       perc.asv_table = reads.asv_table / reads.in)
 
-  return(input_files)
 }
 
 
@@ -120,8 +119,7 @@ plot_abundance_per_step <- function(
       panel.grid.minor.x = ggplot2::element_blank(),
       panel.grid.major.x = ggplot2::element_blank()) +
     ggplot2::labs(
-      x = "pstringr::rocess
-        ing step",
+      x = "processing step",
       y = stringr::str_c(
         dplyr::if_else(relative, "relative", ""),
           "abundance after step", sep = " "))
