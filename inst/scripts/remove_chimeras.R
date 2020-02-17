@@ -83,7 +83,7 @@ if (!file.exists(out_file)) {
     allowOneOf = microbiome.onglab::get_param_chimeras("allowOneOf", params),
     minOneOffParentDistance = microbiome.onglab::get_param_chimeras(
       "minOneOffParentDistance", params),
-    maxShift = microbiome.oglab::get_param_chimeras("maxShift", params),
+    maxShift = microbiome.onglab::get_param_chimeras("maxShift", params),
     multithread = TRUE)
 
   saveRDS(asv_table, out_file)
