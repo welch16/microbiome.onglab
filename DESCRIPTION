@@ -1,7 +1,7 @@
 Package: microbiome.onglab
 Type: Package
 Title: Wrapper functions to run dada2 with htCondor
-Version: 0.2.2
+Version: 0.2.3
 Author: Rene Welch
 Maintainer: Rene Welch <rwelch2@wisc.edu>
 Authors@R: c(person(given = "Rene", family = "Welch", role = c("aut",
