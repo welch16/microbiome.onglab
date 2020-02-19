@@ -40,4 +40,5 @@ Imports:
     shiny,
     tidyselect,
     cowplot,
-    purrr
+    purrr,
+    taxizedb

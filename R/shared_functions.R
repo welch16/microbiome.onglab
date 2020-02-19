@@ -89,7 +89,7 @@ create_file_structure <- function(outdir, groups) {
   # condor stuff
 
   dir.create(file.path(outdir, "ASVs"))
-  dir.create(file.path(outdir, "prevalence"))
+  dir.create(file.path(outdir, "fasta"))
   dir.create(file.path(outdir, "kraken"))
 
   purrr::map(file.path(outdir, groups), create_file_structure_group)

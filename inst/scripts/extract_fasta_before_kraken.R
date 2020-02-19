@@ -50,7 +50,6 @@ if (!file.exists(out_file)) {
   sequences <- get_sequences(my_asv)
 
   # make the fasta dir and write output if we got this far
-  dir.create(fasta_dir, showWarnings = FALSE)
   seqinr::write.fasta(
     sequences,
     names(sequences),
