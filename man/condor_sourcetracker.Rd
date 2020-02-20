@@ -49,7 +49,7 @@ abundance. This makes all taxa to have at most this abundance
 \item{request_mem}{Memory request by condor}
 }
 \description{
-sourcetracker (Knights et al 2013, https://dx.doi.org/10.1038%2Fnmeth.1650)
+sourcetracker (https://dx.doi.org/10.1038%2Fnmeth.1650)
 fits a mixture model of the samples with sources as components, in our
 case we use the negative controls as such.
 }

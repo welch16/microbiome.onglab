@@ -167,13 +167,20 @@ condor_generate_group_dag <- function(
 
   writeLines(
     c(
-      stringr::str_c("JOB", "filter_trim", filter_trim_file, sep = " "),
-      stringr::str_c("JOB", "error_rates", error_rates_file, sep = " "),
-      stringr::str_c("JOB", "merge_pairs", merge_pairs_file, sep = " "),
-      stringr::str_c("JOB", "seq_tab", seque_table_file, sep = " "),
-      condor_node("filter_trim", "error_rates"),
-      condor_node("error_rates", "merge_pairs"),
-      condor_node("merge_pairs", "seq_tab")), file_connection)
+      stringr::str_c("JOB", stringr::str_c(prefix, "filter_trim", sep = "_"),
+        filter_trim_file, sep = " "),
+      stringr::str_c("JOB", stringr::str_c(prefix, "error_rates", sep = "_"),
+        error_rates_file, sep = " "),
+      stringr::str_c("JOB", stringr::str_c(prefix, "merge_pairs", sep = "_"),
+        merge_pairs_file, sep = " "),
+      stringr::str_c("JOB", stringr::str_c(prefix, "seq_tab", sep = "_"),
+        seque_table_file, sep = " "),
+      condor_node(stringr::str_c(prefix, "filter_trim", sep = "_"),
+        stringr::str_c("error_rates", sep = "_")),
+      condor_node(stringr::str_c(prefix, "error_rates", sep = "_"),
+        stringr::str_c("merge_pairs", sep = "_")),
+      condor_node(stringr::str_c(prefix, "merge_pairs", sep = "_"),
+        stringr::str_c("seq_tab", sep = "_"))), file_connection)
 
   close(file_connection)
 }

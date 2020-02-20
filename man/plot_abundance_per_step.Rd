@@ -12,7 +12,7 @@ plot_abundance_per_step(nreads_summary, summary_fun = median, relative = FALSE)
 \item{summary_fun}{function used to summarize the trend,
 the default function is the \code{median}}
 
-\item{relative}{boolean indicator determining wheter comparing the
+\item{relative}{boolean indicator determining whether comparing the
 relative abundance}
 }
 \value{

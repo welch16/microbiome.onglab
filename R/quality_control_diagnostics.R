@@ -74,7 +74,7 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
 #' @param nreads_summary output of the \code{summarize_number_reads} function
 #' @param summary_fun function used to summarize the trend,
 #'  the default function is the \code{median}
-#' @param relative boolean indicator determining wheter comparing the
+#' @param relative boolean indicator determining whether comparing the
 #'  relative abundance
 #' @return a \code{ggplot} object
 #' @export

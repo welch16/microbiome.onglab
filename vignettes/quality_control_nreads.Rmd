@@ -28,7 +28,7 @@ theme_set(theme_light())
 library(microbiome.onglab)
 ```
 
-We included few functions to quantify the samples' quality by summarizing the ammount of reads in every step of the pipeline. The main function that summarize the read abundance for each samples is:
+We included few functions to quantify the samples' quality by summarizing the amount of reads in every step of the pipeline. The main function that summarize the read abundance for each samples is:
 
 ```{r include=FALSE}
 
