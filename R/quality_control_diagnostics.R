@@ -65,7 +65,7 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
     dplyr::mutate(
       perc_out = reads_out / reads_in,
       perc_merged_pairs = reads_merged_pairs / reads_in,
-      perc_asv_table = reads_sv_table / reads_in)
+      perc_asv_table = reads_asv_table / reads_in)
 
 }
 
