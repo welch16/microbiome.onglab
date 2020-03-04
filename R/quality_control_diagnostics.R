@@ -44,7 +44,7 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
   input_files %<>%
     dplyr::select(-end1, -end2) %>%
     dplyr::mutate(
-      reads.merged_pairs = file.path(outdir, "merged_pairs",
+      reads_merged_pairs = file.path(outdir, "merged_pairs",
                                    paste0(name, "_merged_pairs.rds")) %>%
         furrr::future_map(readRDS) %>%
         furrr::future_map_dbl(~ sum(.$abundance)))
@@ -57,15 +57,15 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
     rs <- rowSums(.)
     tibble::tibble(
       name = names(rs),
-      reads.asv_table = rs)
+      reads_asv_table = rs)
   }
 
   input_files %<>% dplyr::inner_join(asv_table, by = "name")
   input_files %>%
     dplyr::mutate(
-      perc.out = reads.out / reads.in,
-      perc.merged_pairs = reads.merged_pairs / reads.in,
-      perc.asv_table = reads.asv_table / reads.in)
+      perc_out = reads_out / reads_in,
+      perc_merged_pairs = reads_merged_pairs / reads_in,
+      perc_asv_table = reads_asv_table / reads_in)
 
 }
 
@@ -98,8 +98,8 @@ plot_abundance_per_step <- function(
   nreads_summary <- tidyr::gather(nreads_summary,
     step, value, -name, -sample)
   nreads_summary <- mutate(nreads_summary,
-      step = stringr::str_remove(step, "reads."),
-      step = stringr::str_remove(step, "perc."),
+      step = stringr::str_remove(step, "reads_"),
+      step = stringr::str_remove(step, "perc_"),
       step = factor(step) %>% fct_relevel("in", "out", "merged_pairs"))
 
   fun_summary <- dplyr::group_by(nreads_summary, step)
