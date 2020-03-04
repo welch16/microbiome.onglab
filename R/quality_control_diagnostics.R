@@ -65,7 +65,7 @@ summarize_number_reads <- function(reads_file, outprefix, outdir, cores) {
     dplyr::mutate(
       perc_out = reads_out / reads_in,
       perc_merged_pairs = reads_merged_pairs / reads_in,
-      perc_asv_table = reads_asv_table / reads_in)
+      perc_asv_table = reads_sv_table / reads_in)
 
 }
 
@@ -88,7 +88,7 @@ plot_abundance_per_step <- function(
 
     nreads_summary <- dplyr::select(nreads_summary,
       name, sample, tidyselect::contains("perc"))
-    nreads_summary <- dplyr::mutate(nreads_summary, perc.in = 1)
+    nreads_summary <- dplyr::mutate(nreads_summary, perc_in = 1)
 
   }else{
     nreads_summary <- dplyr::select(nreads_summary,
