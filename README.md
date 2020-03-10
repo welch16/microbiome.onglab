@@ -2,7 +2,6 @@
 
 To install it, use any of the following:
 
-```
-devtools::install_github("welch16/microbiome.onglab")
+```R
 devtools::install_github("welch16/microbiome.onglab")
 ```
