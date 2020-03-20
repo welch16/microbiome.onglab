@@ -67,7 +67,7 @@ merge_sourcetracker_results <- function(split_results) {
   proportions_sd <- do.call(rbind, proportions_sd)
 
   train_envs <- purrr::map(split_results, "train.envs")
-  train_envs <- train.envs[[1]]
+  train_envs <- train_envs[[1]]
 
   samplenames <- purrr::map(split_results, "samplenames")
   samplenames <- do.call(c, samplenames)

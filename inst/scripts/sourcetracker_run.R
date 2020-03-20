@@ -169,7 +169,8 @@ results %<>%
   nest(pred, .key = "preds") %>%
   dplyr::mutate(
     preds = purrr::map(preds, pull, pred),
-    results = purrr::map(preds, microbiome.onglab::merge_sourcetracker_results),
+    results = purrr::map(preds,
+      microbiome.onglab::merge_sourcetracker_results),
     draws = purrr::map(results, "draws"),
     proportions = purrr::map(results, "proportions"),
     proportions_sd = purrr::map(results, "proportions_sd"),
@@ -239,7 +240,7 @@ results %<>%
 results %<>%
   dplyr::select(
     -proportions_sd,
-    -train.envs,
+    -train_envs,
     -samplenames,
     -preds,
     -results) %>%
