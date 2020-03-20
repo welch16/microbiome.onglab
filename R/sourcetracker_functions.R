@@ -3,13 +3,15 @@
 NULL
 
 #' loads sourcetracker code from the raw github repository
+#' @param env the environment where sourcetracker is going to be loaded. By
+#'   default, the sourcetracker functions are loaded to the global environment
 #' @export
-load_sourcetracker <- function() {
+load_sourcetracker <- function(env = globalenv()) {
 
   sourcetracker_url <- stringr::str_c("https://raw.githubusercontent.com/",
     "danknights/sourcetracker/master/src/SourceTracker.r")
   script <- RCurl::getURL(sourcetracker_url)
-  eval(parse(text = script))
+  eval(parse(text = script), envir = env)
 }
 
 #' gets the ASV matrix for some samples

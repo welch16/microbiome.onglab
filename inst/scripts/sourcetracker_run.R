@@ -40,7 +40,6 @@ opt_list <- list(
 
 
 opt <- optparse::parse_args(optparse::OptionParser(option_list = opt_list))
-
 out_file <- opt$outfile ## may change if we change the directory structure
 
 stopifnot(file.exists(opt$asv_file),
@@ -97,13 +96,12 @@ all_negative_controls <- neg_controls %>%
 ## only use the top_asvs in order to make the code run faster
 asv_table <- asv_table[, seq_len(opt$top_asvs)]
 
-
 microbiome.onglab::load_sourcetracker()
 alpha1 <- microbiome.onglab::get_param_sourcetracker("alpha1", params)
 alpha2 <- microbiome.onglab::get_param_sourcetracker("alpha2", params)
 beta <- microbiome.onglab::get_param_sourcetracker("beta", params)
 
-neg_controls %<>% tidyr::nest(-id, .key = "group")
+neg_controls %<>% tidyr::nest(group = c(sample, neg_control))
 
 create_sourcetracker <- function(group, asv, rarefaction_depth) {
 

@@ -4,7 +4,11 @@
 \alias{load_sourcetracker}
 \title{loads sourcetracker code from the raw github repository}
 \usage{
-load_sourcetracker()
+load_sourcetracker(env = globalenv())
+}
+\arguments{
+\item{env}{the environment where sourcetracker is going to be loaded. By
+default, the sourcetracker functions are loaded to the global environment}
 }
 \description{
 loads sourcetracker code from the raw github repository
